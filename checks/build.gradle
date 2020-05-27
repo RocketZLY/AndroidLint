@@ -1,0 +1,24 @@
+apply plugin: 'java-library'
+apply plugin: 'kotlin'
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    compileOnly "com.android.tools.lint:lint-api:$lintVersion"
+    compileOnly "com.android.tools.lint:lint-checks:$lintVersion"
+    testImplementation "junit:junit:4.12"
+    testImplementation "com.android.tools.lint:lint:$lintVersion"
+    testImplementation "com.android.tools.lint:lint-tests:$lintVersion"
+    testImplementation "com.android.tools:testutils:$lintVersion"
+}
+
+jar {
+    manifest {
+        // Only use the "-v2" key here if your checks have been updated to the
+        // new 3.0 APIs (including UAST)
+        attributes("Lint-Registry-v2": "com.example.lint.checks.SampleIssueRegistry")
+    }
+}
+
+sourceCompatibility = "7"
+targetCompatibility = "7"
