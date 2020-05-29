@@ -6,3 +6,7 @@ package com.rocketzly.checks
  * Time: 10:15 AM
  */
 const val CLASS_SERIALIZABLE = "java.io.Serializable"
+
+const val CLASS_COLOR = "android.graphics.Color"
+
+const val CLASS_ILLEGAL_ARGUMENT_EXCEPTION = "java.lang.IllegalArgumentException"
