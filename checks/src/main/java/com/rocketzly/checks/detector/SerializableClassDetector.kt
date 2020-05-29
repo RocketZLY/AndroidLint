@@ -4,7 +4,6 @@ import com.android.tools.lint.detector.api.*
 import com.intellij.psi.PsiClassType
 import com.rocketzly.checks.CLASS_SERIALIZABLE
 import org.jetbrains.uast.UClass
-import org.jetbrains.uast.asRecursiveLogString
 
 /**
  * 实现了Serializable接口的类，引用类型成员变量也必须要实现Serializable接口
@@ -37,7 +36,7 @@ class SerializableClassDetector : BaseDetector(), Detector.UastScanner {
             val psiClass = (field.type as? PsiClassType)?.resolve() ?: continue
             if (!context.evaluator.implementsInterface(psiClass, CLASS_SERIALIZABLE, true)) {
                 //boom 大手子们注意了这里第二个参数用context.getLocation(field)会没反应也不知道为啥
-                context.report(ISSUE, context.getNameLocation(field), REPORT_MESSAGE)
+                context.report(ISSUE, context.getLocation(field.typeReference!!), REPORT_MESSAGE)
             }
         }
     }
