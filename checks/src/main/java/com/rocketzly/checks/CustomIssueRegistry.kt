@@ -5,6 +5,7 @@ import com.android.tools.lint.detector.api.CURRENT_API
 import com.android.tools.lint.detector.api.Issue
 import com.rocketzly.checks.detector.ParseColorDetector
 import com.rocketzly.checks.detector.SerializableClassDetector
+import com.rocketzly.checks.detector.AvoidUsageApiDetector
 
 /**
  * User: Rocket
@@ -16,7 +17,8 @@ class CustomIssueRegistry : IssueRegistry() {
     override val issues: List<Issue>
         get() = listOf(
             SerializableClassDetector.ISSUE,
-            ParseColorDetector.ISSUE
+            ParseColorDetector.ISSUE,
+            AvoidUsageApiDetector.ISSUE
         )
 
     override val api: Int

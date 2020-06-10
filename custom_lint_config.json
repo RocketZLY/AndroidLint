@@ -1,0 +1,17 @@
+{
+  "avoid_usage_api": {
+    "method":[
+      {
+        "name": "android.content.ContextWrapper.getSharedPreferences",
+        "message": "避免直接调用getSharedPreferences方法获取sp，建议使用SpUtils",
+        "severity": "error"
+      }]
+  },
+  "handle_exception": [
+    {
+      "method": "android.graphics.Color.parseColor",
+      "exception": "java.lang.IllegalArgumentException",
+      "message": "Color.parseColor需要加try-catch处理IllegalArgumentException异常",
+      "severity": "error"
+    }]
+}
