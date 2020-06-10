@@ -3,6 +3,7 @@ package com.rocketzly.checks.config
 import com.android.tools.lint.detector.api.Context
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import com.google.gson.reflect.TypeToken
 import java.io.File
 
 /**
@@ -34,7 +35,7 @@ class LintConfig private constructor(context: Context) {
     init {
         val configFile =
             File(
-                if (IS_DEBUG) "./src/test/java/com/rocketzly/checks" else context.project.dir.absolutePath + "/../",
+                if (IS_DEBUG) "./src/test/java/com/rocketzly/checks/config" else context.project.dir.absolutePath + "/../",
                 CONFIG_FILE_NAME
             )
         if (configFile.exists() && configFile.isFile) {
@@ -45,10 +46,13 @@ class LintConfig private constructor(context: Context) {
     val avoidUsageApi by lazy {
         val ret = AvoidUsageApi()
 
-        val avoidUsageApiJson = configJson.getAsJsonObject(KEY_AVOID_USAGE_API)
+        val avoidUsageApiJson = configJson.getAsJsonObject(KEY_AVOID_USAGE_API) ?: return@lazy ret
 
-        avoidUsageApiJson.getAsJsonArray("method").forEach {
-            ret.avoidUsageMethodList.add(Gson().fromJson(it, AvoidUsageMethod::class.java))
+        if (avoidUsageApiJson.get("method") != null) {
+            ret.avoidUsageMethodList = Gson().fromJson(
+                avoidUsageApiJson.get("method"),
+                object : TypeToken<List<AvoidUsageMethod>>() {}.type
+            )
         }
 
         ret

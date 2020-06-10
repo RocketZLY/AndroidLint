@@ -7,7 +7,7 @@ package com.rocketzly.checks.config
  * Time: 11:14 AM
  */
 class AvoidUsageApi(
-    val avoidUsageMethodList: MutableList<AvoidUsageMethod> = mutableListOf()
+    var avoidUsageMethodList: List<AvoidUsageMethod> = listOf()
 ) {
     /**
      * 获取方法名list
