@@ -4,6 +4,9 @@ import com.android.tools.lint.detector.api.Context
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
+import com.rocketzly.checks.config.bean.AvoidUsageApi
+import com.rocketzly.checks.config.bean.AvoidUsageMethod
+import com.rocketzly.checks.config.bean.HandleException
 import java.io.File
 
 /**
@@ -14,16 +17,13 @@ import java.io.File
  */
 class LintConfig private constructor(context: Context) {
 
-    var configJson = JsonObject()
+    var parser: ConfigParser
 
     companion object {
         const val IS_DEBUG = false
-
         const val CONFIG_FILE_NAME = "custom_lint_config.json"
-        const val KEY_AVOID_USAGE_API = "avoid_usage_api"
 
-
-        var instance: LintConfig? = null
+        private var instance: LintConfig? = null
         fun getInstance(context: Context): LintConfig {
             if (instance == null) {
                 instance = LintConfig(context)
@@ -35,27 +35,25 @@ class LintConfig private constructor(context: Context) {
     init {
         val configFile =
             File(
-                if (IS_DEBUG) "./src/test/java/com/rocketzly/checks/config" else context.project.dir.absolutePath + "/../",
+                if (IS_DEBUG) "./src/test/java/com/rocketzly/checks/config"
+                else context.project.dir.absolutePath + "/../",
                 CONFIG_FILE_NAME
             )
-        if (configFile.exists() && configFile.isFile) {
-            configJson = Gson().fromJson(configFile.bufferedReader(), JsonObject::class.java)
-        }
+        parser = ConfigParser(configFile)
     }
 
+    /**
+     * 避免使用的api包含 方法、构造方法、字段等
+     */
     val avoidUsageApi by lazy {
-        val ret = AvoidUsageApi()
+        parser.getAvoidUsageApi()
+    }
 
-        val avoidUsageApiJson = configJson.getAsJsonObject(KEY_AVOID_USAGE_API) ?: return@lazy ret
-
-        if (avoidUsageApiJson.get("method") != null) {
-            ret.avoidUsageMethodList = Gson().fromJson(
-                avoidUsageApiJson.get("method"),
-                object : TypeToken<List<AvoidUsageMethod>>() {}.type
-            )
-        }
-
-        ret
+    /**
+     * 调用指定API时，需要加try-catch处理指定类型的异常
+     */
+    val handleException: HandleException by lazy {
+        parser.getHandleException()
     }
 
 }

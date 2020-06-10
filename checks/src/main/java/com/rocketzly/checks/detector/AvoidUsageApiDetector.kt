@@ -2,6 +2,7 @@ package com.rocketzly.checks.detector
 
 import com.android.tools.lint.detector.api.*
 import com.intellij.psi.PsiMethod
+import com.rocketzly.checks.config.ConfigParser
 import com.rocketzly.checks.config.LintConfig
 import org.jetbrains.uast.UCallExpression
 
@@ -15,7 +16,7 @@ class AvoidUsageApiDetector : BaseDetector(), Detector.UastScanner {
 
     companion object {
         private const val REPORT_MESSAGE =
-            "避免使用${LintConfig.CONFIG_FILE_NAME}中配置的api"
+            "避免使用${LintConfig.CONFIG_FILE_NAME}中${ConfigParser.KEY_AVOID_USAGE_API}配置的api"
         val ISSUE = Issue.create(
             "AvoidUsageApiCheck",
             REPORT_MESSAGE,
@@ -34,7 +35,7 @@ class AvoidUsageApiDetector : BaseDetector(), Detector.UastScanner {
     override fun visitMethodCall(context: JavaContext, node: UCallExpression, method: PsiMethod) {
         super.visitMethodCall(context, node, method)
         val avoidUsageMethod = lintConfig.avoidUsageApi.getAvoidUsageMethodByName(method.name)
-        if (avoidUsageMethod.getClassName().isEmpty()) {//方法不包含类信息直接报错
+        if (avoidUsageMethod.inClass.isEmpty()) {//配置中不包含类信息直接报错
             context.report(
                 ISSUE,
                 context.getLocation(node),
@@ -42,7 +43,7 @@ class AvoidUsageApiDetector : BaseDetector(), Detector.UastScanner {
             )
             return
         }
-        if (!context.evaluator.isMemberInClass(method, avoidUsageMethod.getClassName())) {
+        if (!context.evaluator.isMemberInClass(method, avoidUsageMethod.inClass)) {
             return
         }
         context.report(

@@ -7,9 +7,9 @@
         "severity": "error"
       }]
   },
-  "handle_exception": [
+  "handle_exception_method": [
     {
-      "method": "android.graphics.Color.parseColor",
+      "name": "android.graphics.Color.parseColor",
       "exception": "java.lang.IllegalArgumentException",
       "message": "Color.parseColor需要加try-catch处理IllegalArgumentException异常",
       "severity": "error"
