@@ -1,12 +1,6 @@
 package com.rocketzly.checks.config
 
 import com.android.tools.lint.detector.api.Context
-import com.google.gson.Gson
-import com.google.gson.JsonObject
-import com.google.gson.reflect.TypeToken
-import com.rocketzly.checks.config.bean.AvoidUsageApi
-import com.rocketzly.checks.config.bean.AvoidUsageMethod
-import com.rocketzly.checks.config.bean.HandleException
 import java.io.File
 
 /**
@@ -17,7 +11,7 @@ import java.io.File
  */
 class LintConfig private constructor(context: Context) {
 
-    var parser: ConfigParser
+    private var parser: ConfigParser
 
     companion object {
         const val IS_DEBUG = false
@@ -52,8 +46,8 @@ class LintConfig private constructor(context: Context) {
     /**
      * 调用指定API时，需要加try-catch处理指定类型的异常
      */
-    val handleException: HandleException by lazy {
-        parser.getHandleException()
+    val handleExceptionMethod by lazy {
+        parser.getHandleExceptionMethod()
     }
 
 }

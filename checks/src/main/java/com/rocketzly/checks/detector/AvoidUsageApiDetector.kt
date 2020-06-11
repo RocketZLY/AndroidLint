@@ -1,10 +1,12 @@
 package com.rocketzly.checks.detector
 
+import com.android.tools.lint.client.api.UElementHandler
 import com.android.tools.lint.detector.api.*
-import com.intellij.psi.PsiMethod
 import com.rocketzly.checks.config.ConfigParser
 import com.rocketzly.checks.config.LintConfig
+import com.rocketzly.checks.getQualifiedName
 import org.jetbrains.uast.UCallExpression
+import org.jetbrains.uast.UElement
 
 /**
  * 避免使用api检测器
@@ -28,28 +30,30 @@ class AvoidUsageApiDetector : BaseDetector(), Detector.UastScanner {
         )
     }
 
-    override fun getApplicableMethodNames(): List<String>? {
-        return lintConfig.avoidUsageApi.getAvoidMethodNameList()
+    override fun getApplicableUastTypes(): List<Class<out UElement>>? {
+        return listOf(UCallExpression::class.java)
     }
 
-    override fun visitMethodCall(context: JavaContext, node: UCallExpression, method: PsiMethod) {
-        super.visitMethodCall(context, node, method)
-        val avoidUsageMethod = lintConfig.avoidUsageApi.getAvoidUsageMethodByName(method.name)
-        if (avoidUsageMethod.inClass.isEmpty()) {//配置中不包含类信息直接报错
-            context.report(
-                ISSUE,
-                context.getLocation(node),
-                avoidUsageMethod.message
-            )
-            return
+    override fun createUastHandler(context: JavaContext): UElementHandler? {
+        return object : UElementHandler() {
+
+            override fun visitCallExpression(node: UCallExpression) {
+                checkMethod(context, node)
+            }
         }
-        if (!context.evaluator.isMemberInClass(method, avoidUsageMethod.inClass)) {
-            return
+    }
+
+    private fun checkMethod(context: JavaContext, node: UCallExpression) {
+        val qualifiedName = node.getQualifiedName()
+        lintConfig.avoidUsageApi.method.forEach {
+            if (it.name.isNotEmpty() && it.name == qualifiedName) {//优先匹配name
+                context.report(ISSUE, context.getLocation(node), it.message)
+                return
+            }
+            //再匹配nameRegex
+            if (it.nameRegex.isNotEmpty()) {
+
+            }
         }
-        context.report(
-            ISSUE,
-            context.getLocation(node),
-            avoidUsageMethod.message
-        )
     }
 }

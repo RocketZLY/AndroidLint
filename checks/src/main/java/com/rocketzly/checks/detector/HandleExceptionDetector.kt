@@ -1,10 +1,13 @@
 package com.rocketzly.checks.detector
 
+import com.android.tools.lint.client.api.UElementHandler
 import com.android.tools.lint.detector.api.*
-import com.intellij.psi.PsiMethod
 import com.rocketzly.checks.config.ConfigParser
 import com.rocketzly.checks.config.LintConfig
+import com.rocketzly.checks.config.bean.HandleExceptionMethod
+import com.rocketzly.checks.getQualifiedName
 import org.jetbrains.uast.UCallExpression
+import org.jetbrains.uast.UElement
 import org.jetbrains.uast.UTryExpression
 import org.jetbrains.uast.getParentOfType
 
@@ -17,7 +20,7 @@ import org.jetbrains.uast.getParentOfType
 class HandleExceptionDetector : BaseDetector(), Detector.UastScanner {
     companion object {
         private const val REPORT_MESSAGE =
-            "调用${LintConfig.CONFIG_FILE_NAME}中${ConfigParser.KEY_HANDLE_EXCEPTION}指定API时，需要加try-catch处理指定类型的异常"
+            "调用${LintConfig.CONFIG_FILE_NAME}中${ConfigParser.KEY_HANDLE_EXCEPTION_METHOD}指定API时，需要加try-catch处理指定类型的异常"
         val ISSUE = Issue.create(
             "HandleExceptionCheck",
             REPORT_MESSAGE,
@@ -29,37 +32,53 @@ class HandleExceptionDetector : BaseDetector(), Detector.UastScanner {
         )
     }
 
-    override fun getApplicableMethodNames(): List<String>? {
-        return lintConfig.handleException.getHandleExceptionMethodNameList()
+    override fun getApplicableUastTypes(): List<Class<out UElement>>? {
+        return listOf(UCallExpression::class.java)
     }
 
-    override fun visitMethodCall(context: JavaContext, node: UCallExpression, method: PsiMethod) {
-        val handleExceptionMethod =
-            lintConfig.handleException.getHandleExceptionMethodByName(method.name)
+    override fun createUastHandler(context: JavaContext): UElementHandler? {
+        return object : UElementHandler() {
 
-        if (handleExceptionMethod.inClass.isNotEmpty()
-            && !context.evaluator.isMemberInClass(method, handleExceptionMethod.inClass)
-        ) {//不是当前要检查的类直接return
-            return
+            override fun visitCallExpression(node: UCallExpression) {
+                checkMethod(context, node)
+            }
+        }
+    }
+
+    private fun checkMethod(context: JavaContext, node: UCallExpression) {
+        val qualifiedName = node.getQualifiedName()
+        var handleExceptionMethod: HandleExceptionMethod? = null
+        lintConfig.handleExceptionMethod.forEach {
+            if (it.name.isNotEmpty() && it.name == qualifiedName) {//优先匹配name
+                handleExceptionMethod = it
+                return@forEach
+            }
+
+            if (it.nameRegex.isNotEmpty()) {//在匹配nameRegex
+
+            }
         }
 
+        if (handleExceptionMethod == null) {
+            return
+        }
         val tryExpression: UTryExpression? =
             node.getParentOfType(UTryExpression::class.java)//获取try节点
         if (tryExpression == null) {
-            context.report(ISSUE, context.getLocation(node), handleExceptionMethod.message)
+            context.report(ISSUE, context.getLocation(node), handleExceptionMethod!!.message)
             return
         }
         for (catch in tryExpression.catchClauses) {//拿到catch
             for (reference in catch.typeReferences) {//拿到异常类型
                 if (context.evaluator.typeMatches(
                         reference.type,
-                        handleExceptionMethod.exception
+                        handleExceptionMethod!!.exception
                     )
                 ) {
                     return
                 }
             }
         }
-        context.report(ISSUE, context.getLocation(node), handleExceptionMethod.message)
+        context.report(ISSUE, context.getLocation(node), handleExceptionMethod!!.message)
     }
 }
