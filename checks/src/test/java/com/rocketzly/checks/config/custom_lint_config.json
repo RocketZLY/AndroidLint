@@ -3,12 +3,22 @@
     "method": [
       {
         "name": "android.content.ContextWrapper.getSharedPreferences",
-        "message": "避免直接调用getSharedPreferences方法获取sp，建议使用SpUtils",
+        "message": "禁止直接调用getSharedPreferences方法获取sp，建议使用SpUtils",
         "severity": "error"
       },
       {
         "name_regex": "android\\.util\\.Log\\.(v|d|i|w|e)",
         "message": "禁止直接使用android.util.Log，必须使用统一工具类xxxLog",
+        "severity": "error"
+      },
+      {
+        "name": "android.widget.Toast.show",
+        "message": "禁止直接使用Toast，建议使用xxxUtils",
+        "severity": "error"
+      },
+      {
+        "name": "kotlin.text.StringsKt__StringNumberConversionsJVMKt.toInt",
+        "message": "禁止直接使用Kt提供的String.toInt扩展方法，建议使用xxx.toInt",
         "severity": "error"
       }
     ],
