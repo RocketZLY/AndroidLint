@@ -1,11 +1,17 @@
 {
   "avoid_usage_api": {
-    "method":[
+    "method": [
       {
         "name": "android.content.ContextWrapper.getSharedPreferences",
         "message": "避免直接调用getSharedPreferences方法获取sp，建议使用SpUtils",
         "severity": "error"
-      }]
+      },
+      {
+        "name_regex": "android\\.util\\.Log\\.(v|d|i|w|e)",
+        "message": "禁止直接使用android.util.Log，必须使用统一工具类xxxLog",
+        "severity": "error"
+      }
+    ]
   },
   "handle_exception_method": [
     {
@@ -13,5 +19,6 @@
       "exception": "java.lang.IllegalArgumentException",
       "message": "Color.parseColor需要加try-catch处理IllegalArgumentException异常",
       "severity": "error"
-    }]
+    }
+  ]
 }

@@ -35,7 +35,6 @@ class SerializableClassDetector : BaseDetector(), Detector.UastScanner {
             //字段是引用类型，并且可以拿到该class
             val psiClass = (field.type as? PsiClassType)?.resolve() ?: continue
             if (!context.evaluator.implementsInterface(psiClass, CLASS_SERIALIZABLE, true)) {
-                //boom 大手子们注意了这里第二个参数用context.getLocation(field)会没反应也不知道为啥
                 context.report(ISSUE, context.getLocation(field.typeReference!!), REPORT_MESSAGE)
             }
         }

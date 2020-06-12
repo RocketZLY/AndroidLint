@@ -6,6 +6,7 @@ import com.rocketzly.checks.config.ConfigParser
 import com.rocketzly.checks.config.LintConfig
 import com.rocketzly.checks.config.bean.HandleExceptionMethod
 import com.rocketzly.checks.getQualifiedName
+import com.rocketzly.checks.match
 import org.jetbrains.uast.UCallExpression
 import org.jetbrains.uast.UElement
 import org.jetbrains.uast.UTryExpression
@@ -54,8 +55,11 @@ class HandleExceptionDetector : BaseDetector(), Detector.UastScanner {
                 return@forEach
             }
 
-            if (it.nameRegex.isNotEmpty()) {//在匹配nameRegex
-
+            if (it.nameRegex.isNotEmpty() &&
+                qualifiedName.match(it.nameRegex)
+            ) {//在匹配nameRegex
+                handleExceptionMethod = it
+                return@forEach
             }
         }
 

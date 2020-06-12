@@ -5,6 +5,7 @@ import com.android.tools.lint.detector.api.*
 import com.rocketzly.checks.config.ConfigParser
 import com.rocketzly.checks.config.LintConfig
 import com.rocketzly.checks.getQualifiedName
+import com.rocketzly.checks.match
 import org.jetbrains.uast.UCallExpression
 import org.jetbrains.uast.UElement
 
@@ -50,9 +51,11 @@ class AvoidUsageApiDetector : BaseDetector(), Detector.UastScanner {
                 context.report(ISSUE, context.getLocation(node), it.message)
                 return
             }
-            //再匹配nameRegex
-            if (it.nameRegex.isNotEmpty()) {
-
+            if (it.nameRegex.isNotEmpty() &&
+                qualifiedName.match(it.nameRegex)
+            ) {//在匹配nameRegex
+                context.report(ISSUE, context.getLocation(node), it.message)
+                return
             }
         }
     }

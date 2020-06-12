@@ -19,7 +19,10 @@ class AvoidUsageApiDetectorTest : LintDetectorTest() {
         return mutableListOf(AvoidUsageApiDetector.ISSUE)
     }
 
-    fun testAvoidUsageMethod() {
+    /**
+     * 测试通过名字匹配的方法
+     */
+    fun testAvoidUsageMethodByName() {
         val importActivityClass = java(
             """
             package android.content;
@@ -55,6 +58,47 @@ class AvoidUsageApiDetectorTest : LintDetectorTest() {
         lint()
             .files(
                 importActivityClass, testClass
+            )
+            .run()
+            .expect("")
+    }
+
+    /**
+     * 测试通过正则匹配的方法
+     */
+    fun testAvoidUsageMethodByNameRegex() {
+        val importLogClass = java(
+            """
+            package android.util;
+            public final class Log {
+                public static void i(String tag, String msg) {
+                    
+                }
+            }
+            """.trimIndent()
+        )
+
+        val testCode = kotlin(
+            """
+                package com.rocketzly.androidlint
+
+                import android.util.Log
+
+                /**
+                 * User: Rocket
+                 * Date: 2020/6/12
+                 * Time: 11:37 AM
+                 */
+                class Test {
+                    fun test(){
+                        Log.i("zhuliyuan", "123")
+                    }
+                }
+            """.trimIndent()
+        )
+        lint()
+            .files(
+                importLogClass, testCode
             )
             .run()
             .expect("")
