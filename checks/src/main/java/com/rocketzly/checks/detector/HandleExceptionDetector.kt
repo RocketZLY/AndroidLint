@@ -73,7 +73,12 @@ class HandleExceptionDetector : BaseDetector(), Detector.UastScanner {
                 if (context.evaluator.typeMatches(
                         reference.type,
                         handleExceptionMethod!!.exception
-                    )
+                    )//同一个异常
+                    || context.evaluator.extendsClass(
+                        context.evaluator.findClass(handleExceptionMethod!!.exception),
+                        reference.getQualifiedName()!!,
+                        true
+                    )//try的是异常的父类
                 ) {
                     return
                 }
