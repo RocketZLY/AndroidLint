@@ -4,10 +4,13 @@ import com.android.tools.lint.client.api.UElementHandler
 import com.android.tools.lint.detector.api.*
 import com.rocketzly.checks.config.ConfigParser
 import com.rocketzly.checks.config.LintConfig
+import com.rocketzly.checks.config.LintRuleMatcher
 import com.rocketzly.checks.getQualifiedName
-import com.rocketzly.checks.match
 import org.jetbrains.uast.UCallExpression
 import org.jetbrains.uast.UElement
+import org.jetbrains.uast.getQualifiedName
+import org.jetbrains.uast.util.isConstructorCall
+import org.jetbrains.uast.util.isMethodCall
 
 /**
  * 避免使用api检测器
@@ -39,24 +42,26 @@ class AvoidUsageApiDetector : BaseDetector(), Detector.UastScanner {
         return object : UElementHandler() {
 
             override fun visitCallExpression(node: UCallExpression) {
-                checkMethod(context, node)
+                if (node.isMethodCall()) {
+                    checkMethodCall(context, node)
+                } else if (node.isConstructorCall()) {
+                    checkConstructorCall(context, node)
+                }
             }
         }
     }
 
-    private fun checkMethod(context: JavaContext, node: UCallExpression) {
+    private fun checkMethodCall(context: JavaContext, node: UCallExpression) {
         val qualifiedName = node.getQualifiedName()
         lintConfig.avoidUsageApi.method.forEach {
-            if (it.name.isNotEmpty() && it.name == qualifiedName) {//优先匹配name
-                context.report(ISSUE, context.getLocation(node), it.message)
-                return
-            }
-            if (it.nameRegex.isNotEmpty() &&
-                qualifiedName.match(it.nameRegex)
-            ) {//在匹配nameRegex
+            if (LintRuleMatcher.match(it, qualifiedName)) {
                 context.report(ISSUE, context.getLocation(node), it.message)
                 return
             }
         }
+    }
+
+    private fun checkConstructorCall(context: JavaContext, node: UCallExpression) {
+        node.classReference.getQualifiedName()
     }
 }

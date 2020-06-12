@@ -1,7 +1,5 @@
 package com.rocketzly.checks.config.bean
 
-import com.google.gson.annotations.SerializedName
-
 
 /**
  * 避免调用api
@@ -16,10 +14,4 @@ class AvoidUsageApi(
 /**
  * 避免调用的方法
  */
-data class AvoidUsageMethod(
-    val name: String = "",
-    @SerializedName("name_regex")
-    val nameRegex: String = "",
-    val message: String = "",
-    val severity: String = "error"
-)
+class AvoidUsageMethod : BaseConfigProperty()

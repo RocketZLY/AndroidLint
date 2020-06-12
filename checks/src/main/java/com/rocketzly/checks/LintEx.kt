@@ -16,8 +16,3 @@ import java.util.regex.Pattern
 fun UCallExpression.getQualifiedName(): String {
     return resolve()?.containingClass?.qualifiedName + "." + resolve()?.name
 }
-
-/**
- * 判断是否匹配正则
- */
-fun String.match(regex: String) = Pattern.compile(regex).matcher(this).matches()

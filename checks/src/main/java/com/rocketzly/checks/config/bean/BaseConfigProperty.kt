@@ -3,16 +3,15 @@ package com.rocketzly.checks.config.bean
 import com.google.gson.annotations.SerializedName
 
 /**
- * 调用指定API时，需要加try-catch处理指定类型的异常
+ * lint配置基础属性
  * User: Rocket
- * Date: 2020/6/10
- * Time: 11:06 AM
+ * Date: 2020/6/12
+ * Time: 4:15 PM
  */
-data class HandleExceptionMethod(
+open class BaseConfigProperty(
     val name: String = "",
     @SerializedName("name_regex")
     val nameRegex: String = "",
-    val exception: String = "",
     val message: String = "",
     val severity: String? = "error"
 )
