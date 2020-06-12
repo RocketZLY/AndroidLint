@@ -12,5 +12,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         Log.i("zhuliyuan", "123")
         val sharedPreferences = getSharedPreferences("123", Context.MODE_PRIVATE)
+        Thread()
     }
 }

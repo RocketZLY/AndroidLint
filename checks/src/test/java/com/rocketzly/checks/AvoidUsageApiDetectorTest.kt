@@ -103,4 +103,30 @@ class AvoidUsageApiDetectorTest : LintDetectorTest() {
             .run()
             .expect("")
     }
+
+    fun testAvoidUsageConstruction() {
+        val testClass = java(
+            """
+            package com.rocketzly.checks;
+            
+            /**
+             * User: Rocket
+             * Date: 2020/6/12
+             * Time: 5:25 PM
+             */
+            public class Test {
+                public void test(){
+                    new Thread();
+                }
+            }
+            """.trimIndent()
+        )
+
+        lint()
+            .files(
+                testClass
+            )
+            .run()
+            .expect("")
+    }
 }

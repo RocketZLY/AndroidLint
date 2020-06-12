@@ -62,6 +62,15 @@ class AvoidUsageApiDetector : BaseDetector(), Detector.UastScanner {
     }
 
     private fun checkConstructorCall(context: JavaContext, node: UCallExpression) {
-        node.classReference.getQualifiedName()
+        //不要使用node.resolve()获取构造方法，在没定义构造方法使用默认构造的时候返回值为null
+        val qualifiedName = node.classReference.getQualifiedName()
+        qualifiedName ?: return
+        lintConfig.avoidUsageApi.construction.forEach {
+            if (LintRuleMatcher.match(it, qualifiedName)) {
+                context.report(ISSUE, context.getLocation(node), it.message)
+                return
+            }
+        }
+
     }
 }

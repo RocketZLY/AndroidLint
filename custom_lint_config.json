@@ -11,6 +11,13 @@
         "message": "禁止直接使用android.util.Log，必须使用统一工具类xxxLog",
         "severity": "error"
       }
+    ],
+    "construction": [
+      {
+        "name": "java.lang.Thread",
+        "message": "禁止直接使用new Thread()创建线程，建议使用RxJava做线程操作",
+        "severity": "error"
+      }
     ]
   },
   "handle_exception_method": [
