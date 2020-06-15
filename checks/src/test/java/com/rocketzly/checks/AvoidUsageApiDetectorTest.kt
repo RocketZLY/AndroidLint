@@ -129,4 +129,34 @@ class AvoidUsageApiDetectorTest : LintDetectorTest() {
             .run()
             .expect("")
     }
+
+    fun testAvoidInheritClass() {
+        val importFile = kotlin(
+            """
+                package androidx.appcompat.app;
+                open class AppCompatActivity{
+                    
+                }
+            """.trimIndent()
+        )
+
+
+        val testFile = kotlin(
+            """
+            package com.rocketzly.androidlint
+
+            import androidx.appcompat.app.AppCompatActivity
+
+            class MainActivity : AppCompatActivity() {
+
+            }
+
+        """.trimIndent()
+        )
+
+        lint()
+            .files(importFile, testFile)
+            .run()
+            .expect("")
+    }
 }

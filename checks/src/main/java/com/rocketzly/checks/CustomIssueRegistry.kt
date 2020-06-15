@@ -3,10 +3,9 @@ package com.rocketzly.checks
 import com.android.tools.lint.client.api.IssueRegistry
 import com.android.tools.lint.detector.api.CURRENT_API
 import com.android.tools.lint.detector.api.Issue
-import com.rocketzly.checks.detector.AvoidInheritClassDetector
+import com.rocketzly.checks.detector.AvoidUsageApiDetector
 import com.rocketzly.checks.detector.HandleExceptionDetector
 import com.rocketzly.checks.detector.SerializableClassDetector
-import com.rocketzly.checks.detector.AvoidUsageApiDetector
 
 /**
  * User: Rocket
@@ -19,8 +18,7 @@ class CustomIssueRegistry : IssueRegistry() {
         get() = listOf(
             SerializableClassDetector.ISSUE,
             HandleExceptionDetector.ISSUE,
-            AvoidUsageApiDetector.ISSUE,
-            AvoidInheritClassDetector.ISSUE
+            AvoidUsageApiDetector.ISSUE
         )
 
     override val api: Int

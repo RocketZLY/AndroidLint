@@ -50,11 +50,4 @@ class LintConfig private constructor(context: Context) {
         parser.getHandleExceptionMethod()
     }
 
-    /**
-     * 获取避免继承或实现的类
-     */
-    val avoidInheritClassList by lazy {
-        parser.getAvoidInheritClassList()
-    }
-
 }

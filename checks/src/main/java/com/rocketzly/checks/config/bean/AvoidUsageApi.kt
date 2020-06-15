@@ -9,7 +9,8 @@ package com.rocketzly.checks.config.bean
  */
 class AvoidUsageApi(
     var method: List<AvoidUsageMethod> = listOf(),
-    var construction: List<AvoidUsageConstructor> = listOf()
+    var construction: List<AvoidUsageConstructor> = listOf(),
+    var inherit: List<AvoidInheritClass> = listOf()
 )
 
 /**
@@ -21,3 +22,8 @@ class AvoidUsageMethod : BaseConfigProperty()
  * 避免创建的类
  */
 class AvoidUsageConstructor : BaseConfigProperty()
+
+/**
+ * 避免继承或者实现的类
+ */
+data class AvoidInheritClass(val exclude: List<String> = listOf()) : BaseConfigProperty()

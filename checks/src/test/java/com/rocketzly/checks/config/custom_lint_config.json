@@ -28,18 +28,18 @@
         "message": "禁止直接使用new Thread()创建线程，建议使用RxJava做线程操作",
         "severity": "error"
       }
+    ],
+    "inherit": [
+      {
+        "name_regex": "\\.(AppCompat|Main)?Activity$",
+        "exclude": [
+          "com.rocketzly.androidlint.MainActivity"
+        ],
+        "message": "避免直接继承Activity，建议继承xxxActivity",
+        "severity": "error"
+      }
     ]
   },
-  "avoid_inherit_class": [
-    {
-      "name_regex": "\\.(AppCompat|Main)?Activity$",
-      "exclude": [
-        "com.rocketzly.androidlint.MainActivity"
-      ],
-      "message": "避免直接继承Activity，建议继承xxxActivity",
-      "severity": "error"
-    }
-  ],
   "handle_exception_method": [
     {
       "name": "android.graphics.Color.parseColor",

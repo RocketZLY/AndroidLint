@@ -37,13 +37,6 @@ class ConfigParser(configFile: File) {
         ) ?: AvoidUsageApi()
     }
 
-    fun getAvoidInheritClassList(): List<AvoidInheritClass> {
-        return Gson().fromJson(
-            configJson.getAsJsonArray(KEY_AVOID_INHERIT_CLASS),
-            object : TypeToken<List<AvoidInheritClass>>() {}.type
-        ) ?: listOf()
-    }
-
     fun getHandleExceptionMethod(): List<HandleExceptionMethod> {
         return Gson().fromJson(
             configJson.getAsJsonArray(KEY_HANDLE_EXCEPTION_METHOD),

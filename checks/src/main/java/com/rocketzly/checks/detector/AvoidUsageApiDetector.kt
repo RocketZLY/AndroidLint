@@ -7,6 +7,7 @@ import com.rocketzly.checks.config.LintConfig
 import com.rocketzly.checks.config.LintRuleMatcher
 import com.rocketzly.checks.getQualifiedName
 import org.jetbrains.uast.UCallExpression
+import org.jetbrains.uast.UClass
 import org.jetbrains.uast.UElement
 import org.jetbrains.uast.getQualifiedName
 import org.jetbrains.uast.util.isConstructorCall
@@ -35,7 +36,7 @@ class AvoidUsageApiDetector : BaseDetector(), Detector.UastScanner {
     }
 
     override fun getApplicableUastTypes(): List<Class<out UElement>>? {
-        return listOf(UCallExpression::class.java)
+        return listOf(UCallExpression::class.java, UClass::class.java)
     }
 
     override fun createUastHandler(context: JavaContext): UElementHandler? {
@@ -47,6 +48,10 @@ class AvoidUsageApiDetector : BaseDetector(), Detector.UastScanner {
                 } else if (node.isConstructorCall()) {
                     checkConstructorCall(context, node)
                 }
+            }
+
+            override fun visitClass(node: UClass) {
+                checkInheritClass(context, node)
             }
         }
     }
@@ -73,4 +78,22 @@ class AvoidUsageApiDetector : BaseDetector(), Detector.UastScanner {
         }
 
     }
+
+    private fun checkInheritClass(context: JavaContext, node: UClass) {
+        lintConfig.avoidUsageApi.inherit.forEach { avoidInheritClass ->
+            node.supers.forEach {
+                if (LintRuleMatcher.match(avoidInheritClass, it.qualifiedName ?: "")) {
+                    if (avoidInheritClass.exclude.contains(node.qualifiedName)) {
+                        return
+                    }
+                    context.report(
+                        ISSUE,
+                        context.getLocation(node as UElement),
+                        avoidInheritClass.message
+                    )
+                }
+            }
+        }
+    }
+
 }
