@@ -1,7 +1,11 @@
 package com.rocketzly.checks
 
+import com.android.tools.lint.detector.api.Issue
+import com.android.tools.lint.detector.api.JavaContext
+import com.android.tools.lint.detector.api.Location
+import com.android.tools.lint.detector.api.TextFormat
+import com.rocketzly.checks.config.bean.BaseConfigProperty
 import org.jetbrains.uast.UCallExpression
-import java.util.regex.Pattern
 
 /**
  * User: Rocket
@@ -15,4 +19,24 @@ import java.util.regex.Pattern
  */
 fun UCallExpression.getQualifiedName(): String {
     return resolve()?.containingClass?.qualifiedName + "." + resolve()?.name
+}
+
+fun JavaContext.report(
+    issue: Issue,
+    location: Location,
+    baseProperty: BaseConfigProperty
+) {
+    this.report(
+        Issue.create(
+            issue.id,
+            issue.getBriefDescription(TextFormat.TEXT),
+            issue.getExplanation(TextFormat.TEXT),
+            issue.category,
+            issue.priority,
+            baseProperty.lintSeverity,
+            issue.implementation
+        ),
+        location,
+        baseProperty.message
+    )
 }

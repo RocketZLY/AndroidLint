@@ -6,6 +6,7 @@ import com.rocketzly.checks.config.ConfigParser
 import com.rocketzly.checks.config.LintConfig
 import com.rocketzly.checks.config.LintRuleMatcher
 import com.rocketzly.checks.getQualifiedName
+import com.rocketzly.checks.report
 import org.jetbrains.uast.UCallExpression
 import org.jetbrains.uast.UClass
 import org.jetbrains.uast.UElement
@@ -60,7 +61,7 @@ class AvoidUsageApiDetector : BaseDetector(), Detector.UastScanner {
         val qualifiedName = node.getQualifiedName()
         lintConfig.avoidUsageApi.method.forEach {
             if (LintRuleMatcher.match(it, qualifiedName)) {
-                context.report(ISSUE, context.getLocation(node), it.message)
+                context.report(ISSUE, context.getLocation(node), it)
                 return
             }
         }
@@ -72,7 +73,7 @@ class AvoidUsageApiDetector : BaseDetector(), Detector.UastScanner {
         qualifiedName ?: return
         lintConfig.avoidUsageApi.construction.forEach {
             if (LintRuleMatcher.match(it, qualifiedName)) {
-                context.report(ISSUE, context.getLocation(node), it.message)
+                context.report(ISSUE, context.getLocation(node), it)
                 return
             }
         }
@@ -89,7 +90,7 @@ class AvoidUsageApiDetector : BaseDetector(), Detector.UastScanner {
                     context.report(
                         ISSUE,
                         context.getLocation(node as UElement),
-                        avoidInheritClass.message
+                        avoidInheritClass
                     )
                 }
             }

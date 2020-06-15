@@ -36,7 +36,7 @@
           "com.rocketzly.androidlint.MainActivity"
         ],
         "message": "避免直接继承Activity，建议继承xxxActivity",
-        "severity": "error"
+        "severity": "warning"
       }
     ]
   },

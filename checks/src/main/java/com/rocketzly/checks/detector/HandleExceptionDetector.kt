@@ -7,6 +7,7 @@ import com.rocketzly.checks.config.LintConfig
 import com.rocketzly.checks.config.LintRuleMatcher
 import com.rocketzly.checks.config.bean.HandleExceptionMethod
 import com.rocketzly.checks.getQualifiedName
+import com.rocketzly.checks.report
 import org.jetbrains.uast.UCallExpression
 import org.jetbrains.uast.UElement
 import org.jetbrains.uast.UTryExpression
@@ -62,7 +63,7 @@ class HandleExceptionDetector : BaseDetector(), Detector.UastScanner {
         val tryExpression: UTryExpression? =
             node.getParentOfType(UTryExpression::class.java)//获取try节点
         if (tryExpression == null) {
-            context.report(ISSUE, context.getLocation(node), handleExceptionMethod!!.message)
+            context.report(ISSUE, context.getLocation(node), handleExceptionMethod!!)
             return
         }
         for (catch in tryExpression.catchClauses) {//拿到catch
@@ -81,6 +82,6 @@ class HandleExceptionDetector : BaseDetector(), Detector.UastScanner {
                 }
             }
         }
-        context.report(ISSUE, context.getLocation(node), handleExceptionMethod!!.message)
+        context.report(ISSUE, context.getLocation(node), handleExceptionMethod!!)
     }
 }

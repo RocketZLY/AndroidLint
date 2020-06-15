@@ -1,5 +1,6 @@
 package com.rocketzly.checks.config.bean
 
+import com.android.tools.lint.detector.api.Severity
 import com.google.gson.annotations.SerializedName
 
 /**
@@ -14,4 +15,16 @@ open class BaseConfigProperty(
     val nameRegex: String = "",
     val message: String = "",
     val severity: String? = "error"
-)
+) {
+    val lintSeverity
+        get() =
+            when (severity) {
+                "fatal" -> Severity.FATAL
+                "error" -> Severity.ERROR
+                "warning" -> Severity.WARNING
+                "informational" -> Severity.INFORMATIONAL
+                "ignore" -> Severity.IGNORE
+                else -> Severity.ERROR
+            }
+
+}
