@@ -11,12 +11,17 @@ import java.util.regex.Pattern
  */
 class LintRuleMatcher {
     companion object {
-        fun match(baseConfig: BaseConfigProperty, qualifiedName: String): Boolean {
-            if (baseConfig.name.isNotEmpty() && baseConfig.name == qualifiedName) {//优先匹配name
+        fun match(baseConfig: BaseConfigProperty, qualifiedName: String?): Boolean {
+            return match(baseConfig.name, baseConfig.nameRegex, qualifiedName)
+        }
+
+        fun match(name: String?, nameRegex: String?, qualifiedName: String?): Boolean {
+            qualifiedName ?: return false
+            if (name != null && name.isNotEmpty() && name == qualifiedName) {//优先匹配name
                 return true
             }
-            if (baseConfig.nameRegex.isNotEmpty() &&
-                Pattern.compile(baseConfig.nameRegex).matcher(qualifiedName).matches()
+            if (nameRegex != null && nameRegex.isNotEmpty() &&
+                Pattern.compile(nameRegex).matcher(qualifiedName).find()
             ) {//在匹配nameRegex
                 return true
             }

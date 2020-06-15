@@ -7,11 +7,6 @@
         "severity": "error"
       },
       {
-        "name_regex": "android\\.util\\.Log\\.(v|d|i|w|e)",
-        "message": "禁止直接使用android.util.Log，必须使用统一工具类xxxLog",
-        "severity": "error"
-      },
-      {
         "name": "android.widget.Toast.show",
         "message": "禁止直接使用Toast，建议使用xxxUtils",
         "severity": "error"
@@ -19,6 +14,11 @@
       {
         "name": "kotlin.text.StringsKt__StringNumberConversionsJVMKt.toInt",
         "message": "禁止直接使用Kt提供的String.toInt扩展方法，建议使用xxx.toInt",
+        "severity": "error"
+      },
+      {
+        "name_regex": "android\\.util\\.Log\\.(v|d|i|w|e)",
+        "message": "禁止直接使用android.util.Log，必须使用统一工具类xxxLog",
         "severity": "error"
       }
     ],
@@ -30,6 +30,16 @@
       }
     ]
   },
+  "avoid_inherit_class": [
+    {
+      "name_regex": "\\.(AppCompat|Main)?Activity$",
+      "exclude": [
+        "com.rocketzly.androidlint.MainActivity"
+      ],
+      "message": "避免直接继承Activity，建议继承xxxActivity",
+      "severity": "error"
+    }
+  ],
   "handle_exception_method": [
     {
       "name": "android.graphics.Color.parseColor",
