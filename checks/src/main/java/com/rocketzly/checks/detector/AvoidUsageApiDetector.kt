@@ -4,7 +4,7 @@ import com.android.tools.lint.client.api.UElementHandler
 import com.android.tools.lint.detector.api.*
 import com.rocketzly.checks.config.ConfigParser
 import com.rocketzly.checks.config.LintConfig
-import com.rocketzly.checks.config.LintRuleMatcher
+import com.rocketzly.checks.LintNameMatcher
 import com.rocketzly.checks.getQualifiedName
 import com.rocketzly.checks.report
 import org.jetbrains.uast.UCallExpression
@@ -60,7 +60,7 @@ class AvoidUsageApiDetector : BaseDetector(), Detector.UastScanner {
     private fun checkMethodCall(context: JavaContext, node: UCallExpression) {
         val qualifiedName = node.getQualifiedName()
         lintConfig.avoidUsageApi.method.forEach {
-            if (LintRuleMatcher.match(it, qualifiedName)) {
+            if (LintNameMatcher.match(it, qualifiedName)) {
                 context.report(ISSUE, context.getLocation(node), it)
                 return
             }
@@ -72,7 +72,7 @@ class AvoidUsageApiDetector : BaseDetector(), Detector.UastScanner {
         val qualifiedName = node.classReference.getQualifiedName()
         qualifiedName ?: return
         lintConfig.avoidUsageApi.construction.forEach {
-            if (LintRuleMatcher.match(it, qualifiedName)) {
+            if (LintNameMatcher.match(it, qualifiedName)) {
                 context.report(ISSUE, context.getLocation(node), it)
                 return
             }
@@ -83,7 +83,7 @@ class AvoidUsageApiDetector : BaseDetector(), Detector.UastScanner {
     private fun checkInheritClass(context: JavaContext, node: UClass) {
         lintConfig.avoidUsageApi.inherit.forEach { avoidInheritClass ->
             node.supers.forEach {
-                if (LintRuleMatcher.match(avoidInheritClass, it.qualifiedName ?: "")) {
+                if (LintNameMatcher.match(avoidInheritClass, it.qualifiedName ?: "")) {
                     if (avoidInheritClass.exclude.contains(node.qualifiedName)) {
                         return
                     }

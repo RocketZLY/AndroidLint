@@ -1,18 +1,22 @@
-package com.rocketzly.checks.config
+package com.rocketzly.checks
 
 import com.rocketzly.checks.config.bean.BaseConfigProperty
 import java.util.regex.Pattern
 
 /**
- * lint规则匹配器
+ * lint 名字匹配器
  * User: Rocket
  * Date: 2020/6/12
  * Time: 4:38 PM
  */
-class LintRuleMatcher {
+class LintNameMatcher {
     companion object {
         fun match(baseConfig: BaseConfigProperty, qualifiedName: String?): Boolean {
-            return match(baseConfig.name, baseConfig.nameRegex, qualifiedName)
+            return match(
+                baseConfig.name,
+                baseConfig.nameRegex,
+                qualifiedName
+            )
         }
 
         /**
