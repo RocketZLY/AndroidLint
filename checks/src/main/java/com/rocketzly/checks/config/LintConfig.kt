@@ -50,4 +50,10 @@ class LintConfig private constructor(context: Context) {
         parser.getHandleExceptionMethod()
     }
 
+    /**
+     * 有依赖关系的api
+     */
+    val dependencyApiList by lazy {
+        parser.getDependencyApiList()
+    }
 }

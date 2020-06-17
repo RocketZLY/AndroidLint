@@ -47,5 +47,14 @@
       "message": "Color.parseColor需要加try-catch处理IllegalArgumentException异常",
       "severity": "error"
     }
+  ],
+  "dependency_api": [
+    {
+      "clazz": "java.lang.StringBuilder",
+      "condition_method": "<init>",
+      "dependency_method": "toString",
+      "message": "StringBuilder未使用toString",
+      "severity": "warning"
+    }
   ]
 }

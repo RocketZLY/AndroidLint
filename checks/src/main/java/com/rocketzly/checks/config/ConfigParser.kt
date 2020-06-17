@@ -3,8 +3,8 @@ package com.rocketzly.checks.config
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
-import com.rocketzly.checks.config.bean.AvoidInheritClass
 import com.rocketzly.checks.config.bean.AvoidUsageApi
+import com.rocketzly.checks.config.bean.DependencyApi
 import com.rocketzly.checks.config.bean.HandleExceptionMethod
 import java.io.File
 
@@ -20,8 +20,8 @@ class ConfigParser(configFile: File) {
 
     companion object {
         const val KEY_AVOID_USAGE_API = "avoid_usage_api"
-        const val KEY_AVOID_INHERIT_CLASS = "avoid_inherit_class"
         const val KEY_HANDLE_EXCEPTION_METHOD = "handle_exception_method"
+        const val KEY_DEPENDENCY_API = "dependency_api"
     }
 
     init {
@@ -41,6 +41,13 @@ class ConfigParser(configFile: File) {
         return Gson().fromJson(
             configJson.getAsJsonArray(KEY_HANDLE_EXCEPTION_METHOD),
             object : TypeToken<List<HandleExceptionMethod>>() {}.type
+        ) ?: listOf()
+    }
+
+    fun getDependencyApiList(): List<DependencyApi> {
+        return Gson().fromJson(
+            configJson.getAsJsonArray(KEY_DEPENDENCY_API),
+            object : TypeToken<List<DependencyApi>>() {}.type
         ) ?: listOf()
     }
 }

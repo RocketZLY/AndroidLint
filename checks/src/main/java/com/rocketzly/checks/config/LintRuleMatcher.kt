@@ -15,6 +15,9 @@ class LintRuleMatcher {
             return match(baseConfig.name, baseConfig.nameRegex, qualifiedName)
         }
 
+        /**
+         * name是完全匹配，nameRegex是正则匹配，匹配优先级上name>nameRegex
+         */
         fun match(name: String?, nameRegex: String?, qualifiedName: String?): Boolean {
             qualifiedName ?: return false
             if (name != null && name.isNotEmpty() && name == qualifiedName) {//优先匹配name
