@@ -14,8 +14,9 @@ class LintConfig private constructor(context: Context) {
     private var parser: ConfigParser
 
     companion object {
-        const val IS_DEBUG = false
+        const val IS_DEBUG = true
         const val CONFIG_FILE_NAME = "custom_lint_config.json"
+        const val DEBUG_PATH = "/Users/liyuan.zhu/Documents/AndroidLint"
 
         private var instance: LintConfig? = null
         fun getInstance(context: Context): LintConfig {
@@ -29,7 +30,7 @@ class LintConfig private constructor(context: Context) {
     init {
         val configFile =
             File(
-                if (IS_DEBUG) "./src/test/java/com/rocketzly/checks/config"
+                if (IS_DEBUG) DEBUG_PATH
                 else context.project.dir.absolutePath + "/../",
                 CONFIG_FILE_NAME
             )
