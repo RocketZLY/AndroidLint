@@ -1,9 +1,6 @@
 package com.rocketzly.checks
 
-import com.android.tools.lint.detector.api.Issue
-import com.android.tools.lint.detector.api.JavaContext
-import com.android.tools.lint.detector.api.Location
-import com.android.tools.lint.detector.api.TextFormat
+import com.android.tools.lint.detector.api.*
 import com.rocketzly.checks.config.bean.BaseConfigProperty
 import org.jetbrains.uast.UCallExpression
 
@@ -21,7 +18,7 @@ fun UCallExpression.getQualifiedName(): String {
     return resolve()?.containingClass?.qualifiedName + "." + resolve()?.name
 }
 
-fun JavaContext.report(
+fun Context.report(
     issue: Issue,
     location: Location,
     baseProperty: BaseConfigProperty

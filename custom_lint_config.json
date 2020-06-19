@@ -53,8 +53,20 @@
       "clazz": "java.lang.StringBuilder",
       "condition_method": "<init>",
       "dependency_method": "toString",
-      "message": "StringBuilder未使用toString",
+      "message": "StringBuilder未使用toString方法",
       "severity": "warning"
     }
-  ]
+  ],
+  "resource_name": {
+    "drawable": {
+      "name_regex": "^(bg|shape)_",
+      "message": "drawable命名不符合 (bg|shape)_ 规则",
+      "severity": "warning"
+    },
+    "layout": {
+      "name_regex": "^(activity|dialog|item|view|page)_",
+      "message": "layout命名不符合 (activity|dialog|item|view|page)_ 规则",
+      "severity": "warning"
+    }
+  }
 }

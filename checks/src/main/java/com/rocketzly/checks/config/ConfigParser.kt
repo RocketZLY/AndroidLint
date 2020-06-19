@@ -6,6 +6,7 @@ import com.google.gson.reflect.TypeToken
 import com.rocketzly.checks.config.bean.AvoidUsageApi
 import com.rocketzly.checks.config.bean.DependencyApi
 import com.rocketzly.checks.config.bean.HandleExceptionMethod
+import com.rocketzly.checks.config.bean.ResourceName
 import java.io.File
 
 /**
@@ -22,6 +23,7 @@ class ConfigParser(configFile: File) {
         const val KEY_AVOID_USAGE_API = "avoid_usage_api"
         const val KEY_HANDLE_EXCEPTION_METHOD = "handle_exception_method"
         const val KEY_DEPENDENCY_API = "dependency_api"
+        const val KEY_RESOURCE_NAME = "resource_name"
     }
 
     init {
@@ -49,5 +51,12 @@ class ConfigParser(configFile: File) {
             configJson.getAsJsonArray(KEY_DEPENDENCY_API),
             object : TypeToken<List<DependencyApi>>() {}.type
         ) ?: listOf()
+    }
+
+    fun getResourceName(): ResourceName {
+        return Gson().fromJson(
+            configJson.getAsJsonObject(KEY_RESOURCE_NAME),
+            object : TypeToken<ResourceName>() {}.type
+        ) ?: ResourceName()
     }
 }

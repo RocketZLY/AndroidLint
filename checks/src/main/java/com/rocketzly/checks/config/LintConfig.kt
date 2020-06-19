@@ -57,4 +57,11 @@ class LintConfig private constructor(context: Context) {
     val dependencyApiList by lazy {
         parser.getDependencyApiList()
     }
+
+    /**
+     * 获取资源命名
+     */
+    val resourceName by lazy {
+        parser.getResourceName()
+    }
 }

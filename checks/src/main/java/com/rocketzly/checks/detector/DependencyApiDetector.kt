@@ -27,7 +27,7 @@ import org.jetbrains.uast.visitor.AbstractUastVisitor
 class DependencyApiDetector : BaseDetector(), Detector.UastScanner {
     companion object {
         private const val REPORT_MESSAGE =
-            "避免使用${LintConfig.CONFIG_FILE_NAME}中${ConfigParser.KEY_DEPENDENCY_API}配置的api"
+            "使用${LintConfig.CONFIG_FILE_NAME}中${ConfigParser.KEY_DEPENDENCY_API}配置的api时必须调用dependencyMethod方法"
         val ISSUE = Issue.create(
             "DependencyApiCheck",
             REPORT_MESSAGE,
