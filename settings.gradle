@@ -1,4 +1,4 @@
 rootProject.name='Android Lint'
 include ':app'
 include ':checks'
-include ':library'
+include ':lintlibrary'
