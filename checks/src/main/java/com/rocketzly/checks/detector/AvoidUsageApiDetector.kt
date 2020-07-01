@@ -15,7 +15,7 @@ import org.jetbrains.uast.util.isConstructorCall
 import org.jetbrains.uast.util.isMethodCall
 
 /**
- * 避免使用api检测器
+ * 避免使用api检测器（目前可以检测方法调用、类创建、实现或者继承）
  * User: Rocket
  * Date: 2020/6/9
  * Time: 4:35 PM
@@ -58,9 +58,8 @@ class AvoidUsageApiDetector : BaseDetector(), Detector.UastScanner {
     }
 
     private fun checkMethodCall(context: JavaContext, node: UCallExpression) {
-        val qualifiedName = node.getQualifiedName()
         lintConfig.avoidUsageApi.method.forEach {
-            if (LintNameMatcher.match(it, qualifiedName)) {
+            if (LintNameMatcher.matchMethod(it, node)) {
                 context.report(ISSUE, context.getLocation(node), it)
                 return
             }
@@ -68,11 +67,8 @@ class AvoidUsageApiDetector : BaseDetector(), Detector.UastScanner {
     }
 
     private fun checkConstructorCall(context: JavaContext, node: UCallExpression) {
-        //不要使用node.resolve()获取构造方法，在没定义构造方法使用默认构造的时候返回值为null
-        val qualifiedName = node.classReference.getQualifiedName()
-        qualifiedName ?: return
         lintConfig.avoidUsageApi.construction.forEach {
-            if (LintNameMatcher.match(it, qualifiedName)) {
+            if (LintNameMatcher.matchConstruction(it, node)) {
                 context.report(ISSUE, context.getLocation(node), it)
                 return
             }
@@ -82,17 +78,16 @@ class AvoidUsageApiDetector : BaseDetector(), Detector.UastScanner {
 
     private fun checkInheritClass(context: JavaContext, node: UClass) {
         lintConfig.avoidUsageApi.inherit.forEach { avoidInheritClass ->
-            node.supers.forEach {
-                if (LintNameMatcher.match(avoidInheritClass, it.qualifiedName ?: "")) {
-                    if (avoidInheritClass.exclude.contains(node.qualifiedName)) {
-                        return
-                    }
-                    context.report(
-                        ISSUE,
-                        context.getLocation(node as UElement),
-                        avoidInheritClass
-                    )
-                }
+            if (LintNameMatcher.matchInheritClass(
+                    avoidInheritClass,
+                    node
+                )
+            ) {
+                context.report(
+                    ISSUE,
+                    context.getLocation(node as UElement),
+                    avoidInheritClass
+                )
             }
         }
     }

@@ -1,6 +1,10 @@
 package com.rocketzly.checks
 
 import com.rocketzly.checks.config.bean.BaseConfigProperty
+import org.jetbrains.uast.UCallExpression
+import org.jetbrains.uast.UClass
+import org.jetbrains.uast.getContainingUClass
+import org.jetbrains.uast.getQualifiedName
 import java.util.regex.Pattern
 
 /**
@@ -11,19 +15,88 @@ import java.util.regex.Pattern
  */
 class LintNameMatcher {
     companion object {
-        fun match(baseConfig: BaseConfigProperty, qualifiedName: String?): Boolean {
+        /**
+         * 匹配方法
+         */
+        fun matchMethod(
+            baseConfig: BaseConfigProperty,
+            node: UCallExpression
+        ): Boolean {
             return match(
                 baseConfig.name,
                 baseConfig.nameRegex,
-                qualifiedName
+                node.getQualifiedName(),
+                node.getContainingUClass()?.qualifiedName,
+                baseConfig.exclude
             )
         }
 
         /**
-         * name是完全匹配，nameRegex是正则匹配，匹配优先级上name>nameRegex
+         * 匹配类创建
          */
-        fun match(name: String?, nameRegex: String?, qualifiedName: String?): Boolean {
+        fun matchConstruction(
+            baseConfig: BaseConfigProperty,
+            node: UCallExpression
+        ): Boolean {
+            return match(
+                baseConfig.name,
+                baseConfig.nameRegex,
+                //不要使用node.resolve()获取构造方法，在没定义构造方法使用默认构造的时候返回值为null
+                node.classReference.getQualifiedName(),
+                node.getContainingUClass()?.qualifiedName,
+                baseConfig.exclude
+            )
+        }
+
+        /**
+         * 匹配继承或实现类
+         */
+        fun matchInheritClass(
+            baseConfig: BaseConfigProperty,
+            node: UClass
+        ): Boolean {
+            node.supers.forEach {
+                if (match(
+                        baseConfig.name,
+                        baseConfig.nameRegex,
+                        it.qualifiedName,
+                        node.qualifiedName,
+                        baseConfig.exclude
+                    )
+                ) return true
+            }
+            return false
+        }
+
+        /**
+         * 匹配文件名
+         */
+        fun matchFileName(
+            baseConfig: BaseConfigProperty,
+            fileName: String
+        ) = match(
+            baseConfig.name,
+            baseConfig.nameRegex,
+            fileName
+        )
+
+
+        /**
+         * name是完全匹配，nameRegex是正则匹配，匹配优先级上name > nameRegex
+         * inClassName是当前需要匹配的方法所在类
+         * exclude是要排除匹配的类（目前以类的粒度去排除）
+         */
+        fun match(
+            name: String?,
+            nameRegex: String?,
+            qualifiedName: String?,
+            inClassName: String? = null,
+            exclude: List<String>? = null
+        ): Boolean {
             qualifiedName ?: return false
+
+            if (exclude != null && exclude.contains(inClassName)) return false
+
             if (name != null && name.isNotEmpty() && name == qualifiedName) {//优先匹配name
                 return true
             }

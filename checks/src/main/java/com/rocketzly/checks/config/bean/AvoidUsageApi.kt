@@ -26,4 +26,4 @@ class AvoidUsageConstructor : BaseConfigProperty()
 /**
  * 避免继承或者实现的类
  */
-data class AvoidInheritClass(val exclude: List<String> = listOf()) : BaseConfigProperty()
+class AvoidInheritClass : BaseConfigProperty()

@@ -44,7 +44,7 @@ class ResourceNameDetector : BaseDetector(), XmlScanner {
             else -> null
         } ?: return
         val fileName = getBaseName(context.file.name)
-        if (!LintNameMatcher.match(resourceName, fileName)) {
+        if (!LintNameMatcher.matchFileName(resourceName, fileName)) {
             context.report(ISSUE, Location.create(context.file), resourceName)
         }
     }

@@ -48,10 +48,9 @@ class HandleExceptionDetector : BaseDetector(), Detector.UastScanner {
     }
 
     private fun checkMethod(context: JavaContext, node: UCallExpression) {
-        val qualifiedName = node.getQualifiedName()
         var handleExceptionMethod: HandleExceptionMethod? = null
         lintConfig.handleExceptionMethod.forEach {
-            if (LintNameMatcher.match(it, qualifiedName)) {
+            if (LintNameMatcher.matchMethod(it, node)) {
                 handleExceptionMethod = it
                 return@forEach
             }
