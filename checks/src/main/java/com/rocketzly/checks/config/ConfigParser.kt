@@ -27,9 +27,14 @@ class ConfigParser(configFile: File) {
     }
 
     init {
+        var loadConfigSuccess = false
         if (configFile.exists() && configFile.isFile) {
             configJson = Gson().fromJson(configFile.bufferedReader(), JsonObject::class.java)
+            loadConfigSuccess = true
         }
+        println("---------------LintConfig----------------")
+        println("Lint配置文件${configFile.absolutePath}加载${if (loadConfigSuccess) "成功" else "失败"}")
+        println("---------------LintConfig----------------")
     }
 
     fun getAvoidUsageApi(): AvoidUsageApi {
