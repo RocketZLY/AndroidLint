@@ -4,9 +4,8 @@ import com.android.tools.lint.client.api.UElementHandler
 import com.android.tools.lint.detector.api.*
 import com.rocketzly.checks.config.ConfigParser
 import com.rocketzly.checks.config.LintConfig
-import com.rocketzly.checks.LintNameMatcher
+import com.rocketzly.checks.LintMatcher
 import com.rocketzly.checks.config.bean.HandleExceptionMethod
-import com.rocketzly.checks.getQualifiedName
 import com.rocketzly.checks.report
 import org.jetbrains.uast.UCallExpression
 import org.jetbrains.uast.UElement
@@ -50,7 +49,7 @@ class HandleExceptionDetector : BaseDetector(), Detector.UastScanner {
     private fun checkMethod(context: JavaContext, node: UCallExpression) {
         var handleExceptionMethod: HandleExceptionMethod? = null
         lintConfig.handleExceptionMethod.forEach {
-            if (LintNameMatcher.matchMethod(it, node)) {
+            if (LintMatcher.matchMethod(it, node)) {
                 handleExceptionMethod = it
                 return@forEach
             }

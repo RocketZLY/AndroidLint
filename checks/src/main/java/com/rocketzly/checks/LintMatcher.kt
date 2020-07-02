@@ -13,7 +13,7 @@ import java.util.regex.Pattern
  * Date: 2020/6/12
  * Time: 4:38 PM
  */
-class LintNameMatcher {
+class LintMatcher {
     companion object {
         /**
          * 匹配方法

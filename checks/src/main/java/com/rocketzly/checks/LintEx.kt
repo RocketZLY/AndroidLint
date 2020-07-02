@@ -26,7 +26,7 @@ fun Context.report(
     this.report(
         Issue.create(
             issue.id,
-            issue.getBriefDescription(TextFormat.TEXT),
+            baseProperty.message,
             issue.getExplanation(TextFormat.TEXT),
             issue.category,
             issue.priority,

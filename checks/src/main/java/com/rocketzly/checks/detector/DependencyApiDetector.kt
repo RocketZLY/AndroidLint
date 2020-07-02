@@ -4,7 +4,7 @@ import com.android.tools.lint.client.api.UElementHandler
 import com.android.tools.lint.detector.api.*
 import com.rocketzly.checks.config.ConfigParser
 import com.rocketzly.checks.config.LintConfig
-import com.rocketzly.checks.LintNameMatcher
+import com.rocketzly.checks.LintMatcher
 import com.rocketzly.checks.config.bean.DependencyApi
 import com.rocketzly.checks.report
 import org.jetbrains.uast.*
@@ -49,8 +49,8 @@ class DependencyApiDetector : BaseDetector(), Detector.UastScanner {
             override fun visitCallExpression(node: UCallExpression) {
                 //匹配要检查的dependencyApi
                 val dependencyApi = lintConfig.dependencyApiList.find {
-                    LintNameMatcher.match(it.conditionMethod, null, node.methodName)
-                            && LintNameMatcher.match(
+                    LintMatcher.match(it.conditionMethod, null, node.methodName)
+                            && LintMatcher.match(
                         it.clazz,
                         null,
                         node.classReference.getQualifiedName()
@@ -89,8 +89,8 @@ class DependencyApiDetector : BaseDetector(), Detector.UastScanner {
             }
 
             if (seenTarget &&
-                LintNameMatcher.match(dependencyApi.dependencyMethod, null, node.methodName) &&
-                LintNameMatcher.match(
+                LintMatcher.match(dependencyApi.dependencyMethod, null, node.methodName) &&
+                LintMatcher.match(
                     dependencyApi.clazz,
                     null,
                     node.classReference.getQualifiedName()

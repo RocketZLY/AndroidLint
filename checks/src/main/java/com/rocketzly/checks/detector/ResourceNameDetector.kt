@@ -3,7 +3,7 @@ package com.rocketzly.checks.detector
 import com.android.SdkConstants
 import com.android.resources.ResourceFolderType
 import com.android.tools.lint.detector.api.*
-import com.rocketzly.checks.LintNameMatcher
+import com.rocketzly.checks.LintMatcher
 import com.rocketzly.checks.config.ConfigParser
 import com.rocketzly.checks.config.LintConfig
 import com.rocketzly.checks.report
@@ -44,7 +44,7 @@ class ResourceNameDetector : BaseDetector(), XmlScanner {
             else -> null
         } ?: return
         val fileName = getBaseName(context.file.name)
-        if (!LintNameMatcher.matchFileName(resourceName, fileName)) {
+        if (!LintMatcher.matchFileName(resourceName, fileName)) {
             context.report(ISSUE, Location.create(context.file), resourceName)
         }
     }

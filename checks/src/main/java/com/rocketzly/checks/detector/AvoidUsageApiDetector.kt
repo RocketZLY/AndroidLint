@@ -4,13 +4,11 @@ import com.android.tools.lint.client.api.UElementHandler
 import com.android.tools.lint.detector.api.*
 import com.rocketzly.checks.config.ConfigParser
 import com.rocketzly.checks.config.LintConfig
-import com.rocketzly.checks.LintNameMatcher
-import com.rocketzly.checks.getQualifiedName
+import com.rocketzly.checks.LintMatcher
 import com.rocketzly.checks.report
 import org.jetbrains.uast.UCallExpression
 import org.jetbrains.uast.UClass
 import org.jetbrains.uast.UElement
-import org.jetbrains.uast.getQualifiedName
 import org.jetbrains.uast.util.isConstructorCall
 import org.jetbrains.uast.util.isMethodCall
 
@@ -59,7 +57,7 @@ class AvoidUsageApiDetector : BaseDetector(), Detector.UastScanner {
 
     private fun checkMethodCall(context: JavaContext, node: UCallExpression) {
         lintConfig.avoidUsageApi.method.forEach {
-            if (LintNameMatcher.matchMethod(it, node)) {
+            if (LintMatcher.matchMethod(it, node)) {
                 context.report(ISSUE, context.getLocation(node), it)
                 return
             }
@@ -68,7 +66,7 @@ class AvoidUsageApiDetector : BaseDetector(), Detector.UastScanner {
 
     private fun checkConstructorCall(context: JavaContext, node: UCallExpression) {
         lintConfig.avoidUsageApi.construction.forEach {
-            if (LintNameMatcher.matchConstruction(it, node)) {
+            if (LintMatcher.matchConstruction(it, node)) {
                 context.report(ISSUE, context.getLocation(node), it)
                 return
             }
@@ -78,7 +76,7 @@ class AvoidUsageApiDetector : BaseDetector(), Detector.UastScanner {
 
     private fun checkInheritClass(context: JavaContext, node: UClass) {
         lintConfig.avoidUsageApi.inherit.forEach { avoidInheritClass ->
-            if (LintNameMatcher.matchInheritClass(
+            if (LintMatcher.matchInheritClass(
                     avoidInheritClass,
                     node
                 )
@@ -88,6 +86,7 @@ class AvoidUsageApiDetector : BaseDetector(), Detector.UastScanner {
                     context.getLocation(node as UElement),
                     avoidInheritClass
                 )
+                return
             }
         }
     }
