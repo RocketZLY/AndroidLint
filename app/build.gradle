@@ -36,6 +36,8 @@ android {
         warningsAsErrors false
         //在 release 版本是否检查 fatal 类型错误，默认release版本为开启。开启后，检查到 fatal 类型错误则会关闭
         checkReleaseBuilds false
+        //创建警告基准
+//        baseline file("lint-baseline.xml")
     }
 
     buildTypes {
