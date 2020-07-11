@@ -14,7 +14,7 @@ class LintConfig private constructor(context: Context) {
     private var parser: ConfigParser
 
     companion object {
-        const val IS_DEBUG = true
+        const val IS_DEBUG = false
         const val CONFIG_FILE_NAME = "custom_lint_config.json"
         const val DEBUG_PATH = "/Users/liyuan.zhu/Documents/AndroidLint"
 

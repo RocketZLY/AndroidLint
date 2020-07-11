@@ -1,5 +1,0 @@
-task installGitHook(type: Copy) {
-    from new File(rootProject.rootDir, 'hooks/pre-push')
-    into { new File(rootProject.rootDir, '.git/hooks') }
-    fileMode 0777
-}
