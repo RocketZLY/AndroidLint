@@ -8,9 +8,8 @@ import com.google.gson.annotations.SerializedName
  * Time: 4:12 PM
  */
 data class DependencyApi(
-    val clazz: String = "",
-    @SerializedName("condition_method")
-    val conditionMethod: String = "",
+    @SerializedName("trigger_method")
+    val triggerMethod: String = "",
     @SerializedName("dependency_method")
     val dependencyMethod: String = ""
 ) : BaseConfigProperty()

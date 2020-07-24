@@ -6,18 +6,19 @@ import com.rocketzly.checks.config.ConfigParser
 import com.rocketzly.checks.config.LintConfig
 import com.rocketzly.checks.LintMatcher
 import com.rocketzly.checks.config.bean.DependencyApi
+import com.rocketzly.checks.getQualifiedName
 import com.rocketzly.checks.report
 import org.jetbrains.uast.*
 import org.jetbrains.uast.visitor.AbstractUastVisitor
 
 /**
  * 有依赖关系api
- * 目前检查开始条件是有[DependencyApi.clazz]类的[DependencyApi.conditionMethod]方法被调用，
- * 如果满足开始条件则检查[DependencyApi.conditionMethod]后面的方法，
- * 有没有调用[DependencyApi.clazz]类的[DependencyApi.dependencyMethod]方法如果没调用则report。
+ * 目前检查开始条件是[DependencyApi.triggerMethod]方法被调用，
+ * 如果满足开始条件则检查[DependencyApi.triggerMethod]后面的方法，
+ * 有没有调用[DependencyApi.dependencyMethod]方法如果没调用则report。
  *
- * 警告：⚠️目前只能检查[DependencyApi.conditionMethod]在方法中被调用的情况，
- * 其次由于无法区分类的实例，如果同一个方法中后面有其他[DependencyApi.clazz]类的实例调用了
+ * 警告：⚠️目前只能检查[DependencyApi.triggerMethod]在方法中被调用的情况，
+ * 其次由于无法区分类的实例，如果同一个方法中后面有其他的实例调用了
  * [DependencyApi.dependencyMethod]也会认为当前实例调用了依赖方法，不在report（目前没找到解决办法😂）
  *
  * User: Rocket
@@ -49,22 +50,16 @@ class DependencyApiDetector : BaseDetector(), Detector.UastScanner {
             override fun visitCallExpression(node: UCallExpression) {
                 //匹配要检查的dependencyApi
                 val dependencyApi = lintConfig.dependencyApiList.find {
-                    LintMatcher.match(it.conditionMethod, null, node.methodName)
-                            && LintMatcher.match(
-                        it.clazz,
-                        null,
-                        node.classReference.getQualifiedName()
-                    )
+                    LintMatcher.match(null, it.triggerMethod, node.getQualifiedName())
                 } ?: return
 
                 //拿到外层方法
                 val outMethod =
                     node.getParentOfType<UAnnotationMethod>(UAnnotationMethod::class.java, true)
                         ?: return
-
                 val dependencyApiFinder = DependencyApiFinder(node, dependencyApi)
                 outMethod.accept(dependencyApiFinder)//检查outMethod内是否有调用dependency_method
-                if (dependencyApiFinder.found) {
+                if (dependencyApiFinder.isFound()) {
                     return
                 }
                 context.report(ISSUE, context.getLocation(node), dependencyApi)
@@ -79,22 +74,16 @@ class DependencyApiDetector : BaseDetector(), Detector.UastScanner {
         private val dependencyApi: DependencyApi
     ) : AbstractUastVisitor() {
 
-        var seenTarget = false
-        var found = false
+        private var seenTarget = false
+        private var found = false
 
         override fun visitCallExpression(node: UCallExpression): Boolean {
             if (target == node) {
                 seenTarget = true
                 return super.visitCallExpression(node)
             }
-
             if (seenTarget &&
-                LintMatcher.match(dependencyApi.dependencyMethod, null, node.methodName) &&
-                LintMatcher.match(
-                    dependencyApi.clazz,
-                    null,
-                    node.classReference.getQualifiedName()
-                )
+                LintMatcher.match(null, dependencyApi.dependencyMethod, node.getQualifiedName())
             ) {
                 found = true
             }

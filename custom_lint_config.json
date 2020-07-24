@@ -54,10 +54,9 @@
   ],
   "dependency_api": [
     {
-      "clazz": "java.lang.StringBuilder",
-      "condition_method": "<init>",
-      "dependency_method": "toString",
-      "message": "StringBuilder未使用toString方法",
+      "trigger_method": "com.example.common.RxBus.toObservable",
+      "dependency_method": "com.example.common.RxLifeCycleExtensionsKt.disposeOnDestroy",
+      "message": "RxBus监听后必须调disposeOnDestroy在页面销毁的时候关闭",
       "severity": "warning"
     }
   ],
