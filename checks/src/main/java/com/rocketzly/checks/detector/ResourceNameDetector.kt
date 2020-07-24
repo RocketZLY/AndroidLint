@@ -43,6 +43,11 @@ class ResourceNameDetector : BaseDetector(), XmlScanner {
             ResourceFolderType.LAYOUT -> lintConfig.resourceName.layout
             else -> null
         } ?: return
+
+        if (resourceName.name.isEmpty() && resourceName.nameRegex.isEmpty()) {
+            return
+        }
+
         val fileName = getBaseName(context.file.name)
         if (!LintMatcher.matchFileName(resourceName, fileName)) {
             context.report(ISSUE, Location.create(context.file), resourceName)
