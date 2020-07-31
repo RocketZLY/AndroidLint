@@ -15,7 +15,9 @@ open class BaseConfigProperty(
     val nameRegex: String = "",
     val message: String = "",
     val exclude: List<String> = listOf(),
-    val severity: String? = "error"
+    @SerializedName("exclude_regex")
+    val excludeRegex: String = "",
+    private val severity: String? = "error"
 ) {
     val lintSeverity
         get() =

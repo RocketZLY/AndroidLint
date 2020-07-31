@@ -27,7 +27,8 @@ class LintMatcher {
                 baseConfig.nameRegex,
                 node.getQualifiedName(),
                 node.getContainingUClass()?.qualifiedName,
-                baseConfig.exclude
+                baseConfig.exclude,
+                baseConfig.excludeRegex
             )
         }
 
@@ -44,7 +45,8 @@ class LintMatcher {
                 //不要使用node.resolve()获取构造方法，在没定义构造方法使用默认构造的时候返回值为null
                 node.classReference.getQualifiedName(),
                 node.getContainingUClass()?.qualifiedName,
-                baseConfig.exclude
+                baseConfig.exclude,
+                baseConfig.excludeRegex
             )
         }
 
@@ -61,7 +63,8 @@ class LintMatcher {
                         baseConfig.nameRegex,
                         it.qualifiedName,
                         node.qualifiedName,
-                        baseConfig.exclude
+                        baseConfig.exclude,
+                        baseConfig.excludeRegex
                     )
                 ) return true
             }
@@ -91,11 +94,22 @@ class LintMatcher {
             nameRegex: String?,
             qualifiedName: String?,
             inClassName: String? = null,
-            exclude: List<String>? = null
+            exclude: List<String>? = null,
+            excludeRegex: String? = null
         ): Boolean {
             qualifiedName ?: return false
 
-            if (exclude != null && exclude.contains(inClassName)) return false
+            //排除
+            if (inClassName != null && inClassName.isNotEmpty()) {
+                if (exclude != null && exclude.contains(inClassName)) return false
+
+                if (excludeRegex != null &&
+                    excludeRegex.isNotEmpty() &&
+                    Pattern.compile(excludeRegex).matcher(inClassName).find()
+                ) {
+                    return false
+                }
+            }
 
             if (name != null && name.isNotEmpty() && name == qualifiedName) {//优先匹配name
                 return true

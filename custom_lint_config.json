@@ -36,9 +36,7 @@
     "inherit": [
       {
         "name_regex": "\\.(AppCompat|Main)?Activity$",
-        "exclude": [
-          "com.rocketzly.androidlint.MainActivity"
-        ],
+        "exclude_regex": "com\\.rocketzly\\.androidlint",
         "message": "避免直接继承Activity，建议继承xxxActivity",
         "severity": "warning"
       }
