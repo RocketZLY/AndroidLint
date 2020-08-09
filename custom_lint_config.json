@@ -2,10 +2,9 @@
   "avoid_usage_api": {
     "method": [
       {
-        "name": "android.content.ContextWrapper.getSharedPreferences",
+        "name_regex": "android\\.content\\.(Context|ContextWrapper)\\.getSharedPreferences",
         "message": "禁止直接调用getSharedPreferences方法获取sp，建议使用SpUtils",
         "exclude": [
-          "com.rocketzly.androidlint.MainActivity",
           "com.rocketzly.androidlint.Test"
         ],
         "severity": "error"
@@ -29,14 +28,14 @@
     "construction": [
       {
         "name": "java.lang.Thread",
-        "message": "禁止直接使用new Thread()创建线程，建议使用RxJava做线程操作",
+        "message": "禁止直接使用new Thread()创建线程，建议使用xxxUtils做线程操作",
         "severity": "error"
       }
     ],
     "inherit": [
       {
         "name_regex": "\\.(AppCompat|Main)?Activity$",
-        "exclude_regex": "com\\.rocketzly\\.androidlint",
+        "exclude_regex": "com.rocketzly.androidlint.MainActivity",
         "message": "避免直接继承Activity，建议继承xxxActivity",
         "severity": "warning"
       }
@@ -52,9 +51,9 @@
   ],
   "dependency_api": [
     {
-      "trigger_method": "com.example.common.RxBus.toObservable",
-      "dependency_method": "com.example.common.RxLifeCycleExtensionsKt.disposeOnDestroy",
-      "message": "RxBus监听后必须调disposeOnDestroy在页面销毁的时候关闭",
+      "trigger_method": "java.lang.StringBuilder.append",
+      "dependency_method": "java.lang.StringBuilder.toString",
+      "message": "StringBuilder调用append后必须调用toString",
       "severity": "warning"
     }
   ],

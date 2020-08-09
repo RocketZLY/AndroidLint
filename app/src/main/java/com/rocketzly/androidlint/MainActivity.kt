@@ -11,10 +11,5 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        Log.i("zhuliyuan", "123")
-        val sharedPreferences = getSharedPreferences("123", Context.MODE_PRIVATE)
-        Thread()
-        Toast.makeText(this,"",Toast.LENGTH_SHORT).show()
-        "".toInt()
     }
 }
