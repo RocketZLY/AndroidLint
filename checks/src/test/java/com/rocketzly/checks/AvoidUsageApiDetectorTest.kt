@@ -60,7 +60,7 @@ class AvoidUsageApiDetectorTest : LintDetectorTest() {
                 importActivityClass, testClass
             )
             .run()
-            .expect("")
+            .expect("No warnings.")
     }
 
     /**
@@ -101,7 +101,7 @@ class AvoidUsageApiDetectorTest : LintDetectorTest() {
                 importLogClass, testCode
             )
             .run()
-            .expect("")
+            .expect("No warnings.")
     }
 
     fun testAvoidUsageConstruction() {
@@ -127,7 +127,7 @@ class AvoidUsageApiDetectorTest : LintDetectorTest() {
                 testClass
             )
             .run()
-            .expect("")
+            .expect("No warnings.")
     }
 
     fun testAvoidInheritClass() {
@@ -157,6 +157,6 @@ class AvoidUsageApiDetectorTest : LintDetectorTest() {
         lint()
             .files(importFile, testFile)
             .run()
-            .expect("")
+            .expect("No warnings.")
     }
 }

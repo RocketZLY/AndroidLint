@@ -38,6 +38,7 @@ android {
         checkReleaseBuilds false
         //创建警告基准
 //        baseline file("lint-baseline.xml")
+//        abortOnError false
     }
 
     buildTypes {

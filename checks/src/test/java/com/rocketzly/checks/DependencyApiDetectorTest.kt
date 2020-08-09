@@ -48,7 +48,7 @@ class DependencyApiDetectorTest : LintDetectorTest() {
                 testFile
             )
             .run()
-            .expect("")
+            .expect("No warnings.")
     }
 
 

@@ -53,7 +53,7 @@ class HandleExceptionDetectorTest : LintDetectorTest() {
                 importJavaClass, testFile
             )
             .run()
-            .expect("")
+            .expect("No warnings.")
 
     }
 }
