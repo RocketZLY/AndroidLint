@@ -3,6 +3,8 @@ package com.rocketzly.checks.detector
 import com.android.tools.lint.detector.api.*
 import com.intellij.psi.PsiClassType
 import com.rocketzly.checks.CLASS_SERIALIZABLE
+import com.rocketzly.checks.LintMatcher
+import com.rocketzly.checks.report
 import org.jetbrains.uast.UClass
 
 /**
@@ -34,8 +36,19 @@ class SerializableClassDetector : BaseDetector(), Detector.UastScanner {
         for (field in declaration.fields) {
             //字段是引用类型，并且可以拿到该class
             val psiClass = (field.type as? PsiClassType)?.resolve() ?: continue
+            if (!LintMatcher.matchClass(
+                    lintConfig.serializableConfig,
+                    psiClass
+                )
+            ) {
+                return
+            }
             if (!context.evaluator.implementsInterface(psiClass, CLASS_SERIALIZABLE, true)) {
-                context.report(ISSUE, context.getLocation(field.typeReference!!), REPORT_MESSAGE)
+                context.report(
+                    ISSUE,
+                    context.getLocation(field.typeReference!!),
+                    lintConfig.serializableConfig
+                )
             }
         }
     }

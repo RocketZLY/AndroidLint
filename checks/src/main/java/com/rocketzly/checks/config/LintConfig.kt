@@ -64,4 +64,11 @@ class LintConfig private constructor(context: Context) {
     val resourceName by lazy {
         parser.getResourceName()
     }
+
+    /**
+     * 获取SerializableConfig
+     */
+    val serializableConfig by lazy {
+        parser.getSerializableConfig()
+    }
 }

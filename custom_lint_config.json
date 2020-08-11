@@ -68,5 +68,10 @@
       "message": "layout命名不符合 (activity|dialog|item|view|page)_ 规则",
       "severity": "warning"
     }
+  },
+  "serializable_config": {
+    "name_regex": "^(com\\.rocketzly\\.checks|com\\.rocketzly\\.androidlint)",
+    "message": "该对象必须要实现Serializable接口，因为外部类实现了Serializable接口",
+    "severity": "warning"
   }
 }

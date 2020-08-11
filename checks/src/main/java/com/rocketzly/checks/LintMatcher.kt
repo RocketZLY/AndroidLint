@@ -1,5 +1,6 @@
 package com.rocketzly.checks
 
+import com.intellij.psi.PsiClass
 import com.rocketzly.checks.config.bean.BaseConfigProperty
 import org.jetbrains.uast.UCallExpression
 import org.jetbrains.uast.UClass
@@ -33,7 +34,7 @@ class LintMatcher {
         }
 
         /**
-         * 匹配类创建
+         * 匹配构造方法
          */
         fun matchConstruction(
             baseConfig: BaseConfigProperty,
@@ -82,6 +83,23 @@ class LintMatcher {
             baseConfig.nameRegex,
             fileName
         )
+
+        /**
+         *  匹配类
+         */
+        fun matchClass(
+            baseConfig: BaseConfigProperty,
+            node: PsiClass
+        ): Boolean {
+            return match(
+                baseConfig.name,
+                baseConfig.nameRegex,
+                node.qualifiedName,
+                node.containingClass?.qualifiedName,
+                baseConfig.exclude,
+                baseConfig.excludeRegex
+            )
+        }
 
 
         /**

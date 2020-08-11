@@ -3,10 +3,7 @@ package com.rocketzly.checks.config
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
-import com.rocketzly.checks.config.bean.AvoidUsageApi
-import com.rocketzly.checks.config.bean.DependencyApi
-import com.rocketzly.checks.config.bean.HandleExceptionMethod
-import com.rocketzly.checks.config.bean.ResourceName
+import com.rocketzly.checks.config.bean.*
 import java.io.File
 
 /**
@@ -24,6 +21,7 @@ class ConfigParser(configFile: File) {
         const val KEY_HANDLE_EXCEPTION_METHOD = "handle_exception_method"
         const val KEY_DEPENDENCY_API = "dependency_api"
         const val KEY_RESOURCE_NAME = "resource_name"
+        const val KEY_SERIALIZABLE_CONFIG = "serializable_config"
     }
 
     init {
@@ -63,5 +61,12 @@ class ConfigParser(configFile: File) {
             configJson.getAsJsonObject(KEY_RESOURCE_NAME),
             object : TypeToken<ResourceName>() {}.type
         ) ?: ResourceName()
+    }
+
+    fun getSerializableConfig(): BaseConfigProperty {
+        return Gson().fromJson(
+            configJson.getAsJsonObject(KEY_SERIALIZABLE_CONFIG),
+            object : TypeToken<BaseConfigProperty>() {}.type
+        ) ?: BaseConfigProperty()
     }
 }
