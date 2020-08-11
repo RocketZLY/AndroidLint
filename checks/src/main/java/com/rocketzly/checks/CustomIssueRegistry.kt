@@ -1,7 +1,6 @@
 package com.rocketzly.checks
 
 import com.android.tools.lint.client.api.IssueRegistry
-import com.android.tools.lint.detector.api.CURRENT_API
 import com.android.tools.lint.detector.api.Issue
 import com.rocketzly.checks.detector.*
 
@@ -22,5 +21,5 @@ class CustomIssueRegistry : IssueRegistry() {
         )
 
     override val api: Int
-        get() = CURRENT_API
+        get() = 5
 }
