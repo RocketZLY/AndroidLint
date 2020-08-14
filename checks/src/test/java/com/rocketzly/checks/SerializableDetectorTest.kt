@@ -28,10 +28,7 @@ class SerializableDetectorTest : LintDetectorTest() {
             )
             .run()
             .expect(
-                "src/com/rocketzly/checks/SerializableBean.kt:15: Error: 该对象必须要实现Serializable接口，因为外部类实现了Serializable接口 [SerializableClassCheck]\n" +
-                        "    private var commonBean: CommonBean? = null\n" +
-                        "                            ~~~~~~~~~~~\n" +
-                        "1 errors, 0 warnings"
+                "No warnings."
             )
     }
 
