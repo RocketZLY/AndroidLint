@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'com.rocketzly.lintplugin'
 
 android {
     compileSdkVersion 29
@@ -14,31 +15,6 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-    }
-
-    lintOptions {
-        //设置只检查的类型
-        def checkList = [
-                'SerializableClassCheck',
-                'HandleExceptionCheck',
-                'AvoidUsageApiCheck',
-                'DependencyApiCheck',
-                'ResourceNameCheck'
-        ] as String[]
-        check checkList
-        //是否发现错误，则停止构建
-        abortOnError true
-        //是否应该编写XML报告。默认为true。
-        xmlReport false
-        //指定html输出目录
-        htmlOutput file('build/reports/lint-results.html')
-        //返回lint是否应将所有警告视为错误
-        warningsAsErrors false
-        //在 release 版本是否检查 fatal 类型错误，默认release版本为开启。开启后，检查到 fatal 类型错误则会关闭
-        checkReleaseBuilds false
-        //创建警告基准
-//        baseline file("lint-baseline.xml")
-//        abortOnError false
     }
 
     buildTypes {
@@ -59,5 +35,4 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
-    implementation project(':lintlibrary')
 }

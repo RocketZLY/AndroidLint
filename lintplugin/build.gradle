@@ -1,0 +1,45 @@
+plugins {
+    id 'java-gradle-plugin'
+    id "com.gradle.plugin-publish" version "0.12.0"
+    id 'kotlin'
+    id 'maven'
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.tools.build:gradle:3.5.3'
+}
+
+
+sourceCompatibility = "1.7"
+targetCompatibility = "1.7"
+
+group = 'com.rocketzly'
+version = '0.0.1'
+
+// 发布到本地仓库
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: uri('../repo'))
+        }
+    }
+}
+
+// 发布插件到gradle plugin
+pluginBundle {
+    website = 'https://github.com/RocketZLY/AndroidLint'
+    vcsUrl = 'https://github.com/RocketZLY/AndroidLint'
+    tags = ['lint', 'android', 'check', 'analysis']
+}
+
+gradlePlugin {
+    plugins {
+        lintPlugin {
+            id = 'com.rocketzly.lintplugin'//plugin id
+            displayName = 'lintPlugin'
+            description = 'an android lint plugin,used to check code specifications, bugs, etc'
+            implementationClass = 'com.rocketzly.lintplugin.LintPlugin'
+        }
+    }
+}
