@@ -62,7 +62,7 @@ class LintPlugin : Plugin<Project> {
                 isAbortOnError = false//发生错误停止task执行 默认true
                 project.afterEvaluate {
                     if ((project.extensions.getByName(EXTENSION_NAME) as LintConfigExtension).baseline) {
-                        baselineFile = File(BASELINE_PATH)//创建警告基准
+                        baselineFile = project.file(BASELINE_PATH)//创建警告基准
                     }
                 }
             }
@@ -84,7 +84,7 @@ class LintPlugin : Plugin<Project> {
                 if (task.name.startsWith("lint")) {
                     task.doFirst {
                         println("--------------------------------------------LintConfig--------------------------------------------")
-                        val configFile = File(CONFIG_PATH)
+                        val configFile = File(project.rootDir, CONFIG_PATH)
                         if (!configFile.exists() || !configFile.isFile) {
                             println("配置文件未找到 Path：${configFile.absolutePath}")
                         } else {
@@ -96,7 +96,7 @@ class LintPlugin : Plugin<Project> {
                     }
 
                     task.doLast {
-                        val file = File(project.name + "/" + XML_OUTPUT_PATH)
+                        val file = project.file(XML_OUTPUT_PATH)
                         if (!file.exists() || !file.isFile) {
                             println("未找到${file.absolutePath}文件，无法打印lint结果日志")
                             return@doLast
