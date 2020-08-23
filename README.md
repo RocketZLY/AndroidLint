@@ -24,7 +24,23 @@
 
 **需要Android Gradle在3.5.0以上**
 
-(*/ω＼*)插件还没过审先占位、过审在加上
+根目录gradle
+```groovy
+buildscript {
+  repositories {
+    maven {
+      url "https://plugins.gradle.org/m2/"
+    }
+  }
+  dependencies {
+    classpath "gradle.plugin.com.rocketzly:lintplugin:0.0.1"
+  }
+}
+```
+module gradle
+```groovy
+apply plugin: "com.rocketzly.lintplugin"
+```
 
 ## 使用
 
