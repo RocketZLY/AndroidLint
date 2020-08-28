@@ -9,6 +9,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     compileOnly "com.android.tools.build:gradle:$agp_version"
     compileOnly "com.android.tools.lint:lint-gradle:$lint_version"
+    compileOnly "com.android.tools.lint:lint-api:$lint_version"
 }
 
 
@@ -44,3 +45,13 @@ gradlePlugin {
         }
     }
 }
+
+task updateLintGradleClient(type: Copy) {
+    from('../lintClient/build/product') {
+        include 'lintGradleClient.jar'
+    }
+    into("libs")
+}
+
+updateLintGradleClient.dependsOn(rootProject.getChildProjects().get("lintClient").getTasks().getByName("makeJar"))
+uploadArchives.dependsOn(updateLintGradleClient)

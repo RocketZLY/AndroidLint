@@ -1,0 +1,23 @@
+apply plugin: 'java-library'
+apply plugin: 'kotlin'
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    compileOnly "com.android.tools.lint:lint-gradle:$lint_version"
+    compileOnly gradleApi()
+}
+
+sourceCompatibility = "1.7"
+targetCompatibility = "1.7"
+
+task makeJar(type: Copy) {
+    from('build/libs') {
+        include 'lintClient.jar'
+    }
+    into('build/product/')
+    //重命名
+    rename('lintClient.jar', "lintGradleClient.jar")
+}
+
+makeJar.dependsOn(build)

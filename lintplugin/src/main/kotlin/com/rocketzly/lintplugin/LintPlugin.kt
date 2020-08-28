@@ -1,6 +1,7 @@
 package com.rocketzly.lintplugin
 
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
+import com.android.build.gradle.tasks.LintBaseTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import java.io.File
@@ -34,6 +35,11 @@ class LintPlugin : Plugin<Project> {
         addLintOptionsConfig(project)
         addDependency(project)
         addLintLog(project)
+
+        project.dependencies.add(
+            LintBaseTask.LINT_CLASS_PATH,
+            project.files("/Users/liyuan.zhu/Documents/AndroidLint/lintplugin/libs/lintGradleClient.jar")
+        )
     }
 
     /**
