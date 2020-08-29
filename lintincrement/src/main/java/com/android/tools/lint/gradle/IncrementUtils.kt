@@ -11,7 +11,7 @@ import java.io.File
  * Date: 2020/8/28
  * Time: 4:09 PM
  */
-class IncrementScanUtils {
+class IncrementUtils {
 
     companion object {
 

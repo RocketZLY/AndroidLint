@@ -46,12 +46,4 @@ gradlePlugin {
     }
 }
 
-task updateLintGradleClient(type: Copy) {
-    from('../lintClient/build/product') {
-        include 'lintGradleClient.jar'
-    }
-    into("libs")
-}
-
-updateLintGradleClient.dependsOn(rootProject.getChildProjects().get("lintClient").getTasks().getByName("makeJar"))
-uploadArchives.dependsOn(updateLintGradleClient)
+uploadArchives.dependsOn(rootProject.getChildProjects().get("lintincrement").getTasks().getByName("makeJar"))

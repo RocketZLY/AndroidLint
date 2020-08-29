@@ -3,7 +3,7 @@ apply plugin: 'kotlin'
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     compileOnly "com.android.tools.lint:lint-gradle:$lint_version"
     compileOnly gradleApi()
 }
@@ -11,13 +11,19 @@ dependencies {
 sourceCompatibility = "1.7"
 targetCompatibility = "1.7"
 
+def date = new Date().format("MMdd-HH-mm-ss")
+def originName = "${name}.jar"
+def newName = "${name}-${date}.jar"
+
 task makeJar(type: Copy) {
-    from('build/libs') {
-        include 'lintClient.jar'
+    doFirst {
+        delete('build/export/')
     }
-    into('build/product/')
-    //重命名
-    rename('lintClient.jar', "lintGradleClient.jar")
+    from('build/libs') {
+        include originName
+    }
+    into('build/export')
+    rename(originName, newName)
 }
 
 makeJar.dependsOn(build)

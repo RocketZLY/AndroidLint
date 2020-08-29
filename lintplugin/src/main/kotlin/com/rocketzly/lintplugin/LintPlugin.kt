@@ -35,11 +35,6 @@ class LintPlugin : Plugin<Project> {
         addLintOptionsConfig(project)
         addDependency(project)
         addLintLog(project)
-
-        project.dependencies.add(
-            LintBaseTask.LINT_CLASS_PATH,
-            project.files("/Users/liyuan.zhu/Documents/AndroidLint/lintplugin/libs/lintGradleClient.jar")
-        )
     }
 
     /**
@@ -79,6 +74,16 @@ class LintPlugin : Plugin<Project> {
      */
     private fun addDependency(project: Project) {
         project.dependencies.add("implementation", DEPENDENCY_PATH)
+
+        project.dependencies.add(
+            LintBaseTask.LINT_CLASS_PATH,
+            project.fileTree(
+                mapOf(
+                    "dir" to "${project.rootDir.absolutePath}/lintincrement/build/export",
+                    "include" to listOf("*.jar")
+                )
+            )
+        )
     }
 
     /**
@@ -125,10 +130,13 @@ class LintPlugin : Plugin<Project> {
                                 println("lint检查通过，未发现错误")
                             } else {
                                 println("lint检查未通过，发现${errorCount}个错误")
-                                println("包括如下几类：")
+                                println("包括如下几类错误：")
                                 summary.forEach {
                                     println(it)
                                 }
+                                println(
+                                    "详情请看report：file://${(project.extensions.getByName("android") as? BaseAppModuleExtension)!!.lintOptions.htmlOutput.absolutePath}"
+                                )
                             }
                             println("--------------------------------------------LintResult--------------------------------------------")
                         } catch (e: Exception) {

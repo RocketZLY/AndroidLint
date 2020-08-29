@@ -222,7 +222,7 @@ public class LintGradleClient extends LintCliClient {
             registerProject(dependency.getDir(), dependency);
         }
         //增量扫描
-        IncrementScanUtils.inject(gradleProject, lintRequest);
+        IncrementUtils.inject(gradleProject, lintRequest);
 
         return lintRequest;
     }

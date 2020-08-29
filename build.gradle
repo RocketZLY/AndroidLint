@@ -4,7 +4,7 @@ buildscript {
         lint_version = '26.5.3'
         agp_version = '3.5.3'
         current_branch = "HEAD"
-        target_branch = "origin/dev"
+        target_branch = "origin/master"
     }
     repositories {
         maven {
