@@ -3,8 +3,8 @@ buildscript {
         kotlin_version = '1.3.72'
         lint_version = '26.5.3'
         agp_version = '3.5.3'
-        current_branch = "HEAD"
-        target_branch = "origin/master"
+        currentBranch = "HEAD"
+        targetBranch = "origin/dev"
     }
     repositories {
         maven {

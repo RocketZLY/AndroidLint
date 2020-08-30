@@ -2,7 +2,7 @@ package com.rocketzly.lintplugin.lintconfig
 
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import com.rocketzly.lintplugin.LintPluginManager
-import com.rocketzly.lintplugin.extension.ExtensionHelper.Companion.EXTENSION_NAME
+import com.rocketzly.lintplugin.extension.ExtensionHelper.Companion.EXTENSION_LINT_CONFIG
 import com.rocketzly.lintplugin.extension.LintConfigExtension
 import org.gradle.api.Project
 import java.io.File
@@ -37,7 +37,7 @@ class LintConfigHelper : LintPluginManager.LintHelper {
                 isWarningsAsErrors = false//返回lint是否应将所有警告视为错误
                 isAbortOnError = false//发生错误停止task执行 默认true
                 project.afterEvaluate {
-                    if ((project.extensions.getByName(EXTENSION_NAME) as LintConfigExtension).baseline) {
+                    if ((project.extensions.getByName(EXTENSION_LINT_CONFIG) as LintConfigExtension).baseline) {
                         baselineFile = project.file(BASELINE_RELATIVE_PATH)//创建警告基准
                     }
                 }
