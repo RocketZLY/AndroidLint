@@ -4,9 +4,11 @@
 
 这是一个通用Android Lint库，你可以用它来检查代码规范、bug、资源命名等。
 
-本库最大特点是通用，相较于其他Lint库（规则直接在代码写死），最大的不同是，规则全靠配置生成，更加灵活，即便不知道LintApi，也能添加对应规则。
+本库最大特点是通用，相较于其他Lint库（规则直接在代码写死），最大的不同是，规则全靠配置生成，更加灵活，在多团队协作下，只需拷贝配置文件，改下提示信息即可完成迁移。
 
-具体详情可以参考[Android Lint代码检查实践](https://juejin.im/post/6861562664582119432)。如果有感兴趣的大佬，欢迎一起开发、交流。
+**目前已经支持增量扫描功能，速度更快。**
+
+具体食用详情可以参考[Android Lint代码检查实践](https://juejin.im/post/6861562664582119432)。如果有感兴趣的大佬，欢迎一起开发、交流。
 
 
 
@@ -16,6 +18,7 @@
   ├── checks										  // lint规则代码<br>
   ├── custom_lint_config.json			// 自定义配置文件<br>
   ├── lintlibrary									// 空项目，依赖了checks用来生成aar包<br>
+  ├── lintincrement							 // lint增量扫描代码<br>
   ├── lintplugin									// lint插件用来简化lint配置，并加入日志输出<br>
 
 
@@ -28,19 +31,49 @@
 ```groovy
 buildscript {
   repositories {
-    maven {
-      url "https://plugins.gradle.org/m2/"
-    }
+    jcenter()
   }
   dependencies {
-    classpath "gradle.plugin.com.rocketzly:lintplugin:0.0.1"
+    classpath "com.rocketzly:lintPlugin:0.0.2"
   }
 }
 ```
 module gradle
 ```groovy
-apply plugin: "com.rocketzly.lintplugin"
+apply plugin: "com.rocketzly.lintPlugin"
 ```
+
+
+
+## 配置
+
+### module gradle支持的配置
+
+```groovy
+lintConfig {
+    baseline = true//生成baseline文件，默认为false不会生成
+}
+```
+
+- baseline：是否生成baseline文件，默认为false不生成，如果需要生成则设置为true（可选项）
+
+### 根目录gradle支持的配置
+
+```groovy
+    ext {
+      	lintIncrement = true//增量扫描开关
+        currentBranch = "HEAD"//增量扫描当前分支名
+        targetBranch = "origin/dev"//增量扫描基准分支名
+    }
+```
+
+- lintIncrement：增量扫描开关，默认为true开启（可选项）
+- currentBranch：增量扫描当前分支名，如开启增量扫描必须设置该值（必填）
+- targetBranch：增量扫描基准分支名，如开启增量扫描必须设置该值（必填）
+
+增量扫描是拿currentBranch与targetBranch进行diff找出修改文件，然后进行扫描。
+
+
 
 ## 使用
 
@@ -60,9 +93,11 @@ apply plugin: "com.rocketzly.lintplugin"
 
 以本库为例，执行`./gradlew :app:lintDebug`结果如下：
 
-![](http://rocketzly.androider.top/lint_plugin_log.png)
+![](http://rocketzly.androider.top/lint_increment_result2.png)
 
 LintConfig和LintResult中的信息是在LintPlugin添加的日志信息。
+
+LintIncrement是在增量扫描时候的日志信息。
 
 查看生成的Html文件可以查看详细lint报告
 
