@@ -1,6 +1,5 @@
 plugins {
     id 'java-gradle-plugin'
-    id "com.gradle.plugin-publish" version "0.12.0"
     id 'kotlin'
     id 'maven'
 }
@@ -11,7 +10,6 @@ dependencies {
     compileOnly "com.android.tools.lint:lint-gradle:$lint_version"
     compileOnly "com.android.tools.lint:lint-api:$lint_version"
 }
-
 
 sourceCompatibility = "1.7"
 targetCompatibility = "1.7"
@@ -28,22 +26,24 @@ uploadArchives {
     }
 }
 
-// 发布插件到gradle plugin
-pluginBundle {
-    website = 'https://github.com/RocketZLY/AndroidLint'
-    vcsUrl = 'https://github.com/RocketZLY/AndroidLint'
-    tags = ['lint', 'android', 'check', 'analysis']
-}
-
 gradlePlugin {
     plugins {
         lintPlugin {
             id = 'com.rocketzly.lintplugin'//plugin id
-            displayName = 'lintPlugin'
-            description = 'an android lint plugin,used to check code specifications, bugs, etc'
             implementationClass = 'com.rocketzly.lintplugin.LintPlugin'
         }
     }
 }
 
 uploadArchives.dependsOn(rootProject.getChildProjects().get("lintincrement").getTasks().getByName("makeJar"))
+
+
+apply plugin: 'com.novoda.bintray-release'
+publish {
+    userOrg = 'zhuliyuan' //bintray注册的用户名（不是邮箱）
+    groupId = 'com.rocketzly'
+    artifactId = 'lintPlugin' //项目名称
+    publishVersion = '0.0.1' //版本号
+    desc = 'an android lint plugin,used to check code specifications, bugs, etc' //项目描述。可空。
+    website = 'https://github.com/RocketZLY/AndroidLint' //项目地址，一般填github地址。可空。
+}

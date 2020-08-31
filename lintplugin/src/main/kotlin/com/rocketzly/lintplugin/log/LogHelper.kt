@@ -18,10 +18,12 @@ class LogHelper : LintPluginManager.LintHelper {
     }
 
     override fun apply(project: Project) {
+        var startTime = 0L
         project.afterEvaluate { p ->
             p.tasks.forEach { task ->
                 if (task.name.startsWith("lint")) {
                     task.doFirst {
+                        startTime = System.currentTimeMillis()
                         println("--------------------------------------------LintConfig--------------------------------------------")
                         val configFile = File(project.rootDir, CONFIG_RELATIVE_PATH)
                         if (!configFile.exists() || !configFile.isFile) {
@@ -64,6 +66,7 @@ class LogHelper : LintPluginManager.LintHelper {
                                     println(it)
                                 }
                             }
+                            println("耗时：${System.currentTimeMillis()-startTime}ms")
                             println("--------------------------------------------LintResult--------------------------------------------")
                         } catch (e: Exception) {
                             e.printStackTrace()
