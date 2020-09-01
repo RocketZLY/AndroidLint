@@ -2,7 +2,6 @@ package com.android.tools.lint.gradle
 
 import com.android.tools.lint.client.api.LintRequest
 import org.gradle.api.Project
-import org.gradle.internal.extensibility.DefaultExtraPropertiesExtension
 import java.io.File
 
 /**
@@ -19,36 +18,37 @@ class IncrementUtils {
         fun inject(project: Project, lintRequest: LintRequest) {
             //增量扫描逻辑
             println("--------------------------------------------LintIncrement--------------------------------------------")
-            var isOpen: Boolean
-            var currentBranch: String
-            var targetBranch: String
+            var open = true
+            var currentBranch = ""
+            var targetBranch = ""
 
-            (project.rootProject.extensions.getByName("ext") as DefaultExtraPropertiesExtension).apply {
-                isOpen = find(
-                    "lintIncrement"
-                ) as Boolean? ?: true
+            project.rootProject.extensions.findByName("lintGlobalConfig")?.let { lintGlobalConfig ->
+                lintGlobalConfig::class.java.superclass.apply {
+                    declaredFields.forEach {
+                        it.isAccessible = true
 
-                currentBranch = find(
-                    "currentBranch"
-                ) as String? ?: ""
-
-                targetBranch = find(
-                    "targetBranch"
-                ) as String? ?: ""
+                        when (it.name) {
+                            "currentBranch" -> currentBranch = it.get(lintGlobalConfig) as String
+                            "targetBranch" -> targetBranch = it.get(lintGlobalConfig) as String
+                            "isOpen" -> open = it.get(lintGlobalConfig) as Boolean
+                        }
+                    }
+                }
             }
 
-            if (!isOpen) {
-                println("rootProject.ext.lintIncrement为false，将进行全量扫描")
+
+            if (!open) {
+                println("rootProject.lintGlobalConfig.open为false，将进行全量扫描")
                 println("--------------------------------------------LintIncrement--------------------------------------------")
                 return
             }
             if (currentBranch.isEmpty()) {
-                println("rootProject未设置ext.currentBranch，无法增量扫描，将进行全量扫描")
+                println("rootProject未设置lintGlobalConfig.currentBranch，无法增量扫描，将进行全量扫描")
                 println("--------------------------------------------LintIncrement--------------------------------------------")
                 return
             }
             if (targetBranch.isEmpty()) {
-                println("rootProject未设置ext.targetBranch，无法增量扫描，将进行全量扫描")
+                println("rootProject未设置lintGlobalConfig.targetBranch，无法增量扫描，将进行全量扫描")
                 println("--------------------------------------------LintIncrement--------------------------------------------")
                 return
             }
