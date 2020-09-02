@@ -2,9 +2,8 @@ package com.rocketzly.lintplugin.log
 
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import com.rocketzly.lintplugin.LintPluginManager
-import com.rocketzly.lintplugin.extension.LintGlobalConfigExtension
+import com.rocketzly.lintplugin.executor.ScriptExecutor
 import com.rocketzly.lintplugin.isRootProject
-import com.rocketzly.lintplugin.lintconfig.LintConfigHelper.Companion.HTML_OUTPUT_RELATIVE_PATH
 import com.rocketzly.lintplugin.lintconfig.LintConfigHelper.Companion.XML_OUTPUT_RELATIVE_PATH
 import org.gradle.api.Project
 import java.io.File
@@ -74,8 +73,8 @@ class LogHelper : LintPluginManager.LintHelper {
                             println("耗时：${System.currentTimeMillis() - startTime}ms")
                             printSplitLine("lint结果信息")
 
-                            if (errorCount != 0) {
-                                executePython3(project)
+                            if (errorCount != 0) {//lint检查发现错误执行脚本
+                                ScriptExecutor.exec(project, errorCount, summary)
                             }
                         } catch (e: Exception) {
                             e.printStackTrace()
@@ -85,42 +84,6 @@ class LogHelper : LintPluginManager.LintHelper {
                 }
             }
         }
-    }
-
-    /**
-     * lint检查发现错误执行脚本
-     */
-    private fun executePython3(project: Project) {
-        printSplitLine("lint发现错误执行脚本信息")
-        val scriptPath =
-            project.rootProject.extensions.getByType(LintGlobalConfigExtension::class.java).failScriptPath
-        if (scriptPath.isEmpty()) {
-            println("rootProject.lintGlobalConfig.failScriptPath未设置，将不会自动执行脚本")
-            printSplitLine("lint发现错误执行脚本信息")
-            return
-        }
-
-        val userName = String(
-            Runtime.getRuntime().exec("git config user.name").inputStream.readBytes(),
-            Charsets.UTF_8
-        )
-        val branch = String(
-            Runtime.getRuntime().exec("git symbolic-ref --short -q HEAD").inputStream.readBytes(),
-            Charsets.UTF_8
-        )
-
-        val command =
-            "python3 $scriptPath --userName=$userName --branch=$branch --reportPath=${project.file(
-                HTML_OUTPUT_RELATIVE_PATH
-            )}"
-        println("执行命令如下：")
-        println(command)
-        val byteArray = Runtime.getRuntime().exec(command).inputStream.readBytes()
-        val result = String(byteArray, Charsets.UTF_8)
-        println()
-        println("执行日志如下：")
-        println(result)
-        printSplitLine("lint发现错误执行脚本信息")
     }
 }
 
