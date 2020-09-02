@@ -3,8 +3,6 @@ buildscript {
         kotlin_version = '1.3.72'
         lint_version = '26.5.3'
         agp_version = '3.5.3'
-        currentBranch = "HEAD"
-        targetBranch = "origin/dev"
     }
     repositories {
         maven {
@@ -49,4 +47,11 @@ subprojects {
             }
         }
     }
+}
+
+apply plugin: 'com.rocketzly.lintPlugin'
+lintGlobalConfig {
+    currentBranch = "HEAD"
+    targetBranch = "origin/dev"
+    failScriptPath = getRootDir().path + "/lintNotification.py"
 }

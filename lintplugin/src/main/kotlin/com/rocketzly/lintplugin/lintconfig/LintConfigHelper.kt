@@ -4,6 +4,7 @@ import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import com.rocketzly.lintplugin.LintPluginManager
 import com.rocketzly.lintplugin.extension.ExtensionHelper.Companion.EXTENSION_LINT_CONFIG
 import com.rocketzly.lintplugin.extension.LintConfigExtension
+import com.rocketzly.lintplugin.isRootProject
 import org.gradle.api.Project
 import java.io.File
 
@@ -27,6 +28,8 @@ class LintConfigHelper : LintPluginManager.LintHelper {
     }
 
     override fun apply(project: Project) {
+        if (project.isRootProject()) return
+
         (project.extensions.getByName("android") as? BaseAppModuleExtension)
             ?.lintOptions
             ?.apply {

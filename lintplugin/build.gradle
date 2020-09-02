@@ -15,13 +15,16 @@ sourceCompatibility = "1.7"
 targetCompatibility = "1.7"
 
 group = 'com.rocketzly'
-version = '0.0.2'
+version = '0.0.3'
 
 // 发布到本地仓库
 uploadArchives {
     repositories {
         mavenDeployer {
             repository(url: uri('../repo'))
+            pom.project {
+                artifactId = 'lintPlugin'
+            }
         }
     }
 }

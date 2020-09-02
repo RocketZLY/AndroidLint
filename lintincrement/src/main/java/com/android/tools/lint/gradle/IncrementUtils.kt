@@ -14,10 +14,12 @@ class IncrementUtils {
 
     companion object {
 
+        const val TAG = "lint增量信息"
+        
         @JvmStatic
         fun inject(project: Project, lintRequest: LintRequest) {
             //增量扫描逻辑
-            println("--------------------------------------------LintIncrement--------------------------------------------")
+            printSplitLine(TAG)
             var open = true
             var currentBranch = ""
             var targetBranch = ""
@@ -39,17 +41,17 @@ class IncrementUtils {
 
             if (!open) {
                 println("rootProject.lintGlobalConfig.open为false，将进行全量扫描")
-                println("--------------------------------------------LintIncrement--------------------------------------------")
+                printSplitLine(TAG)
                 return
             }
             if (currentBranch.isEmpty()) {
                 println("rootProject未设置lintGlobalConfig.currentBranch，无法增量扫描，将进行全量扫描")
-                println("--------------------------------------------LintIncrement--------------------------------------------")
+                printSplitLine(TAG)
                 return
             }
             if (targetBranch.isEmpty()) {
                 println("rootProject未设置lintGlobalConfig.targetBranch，无法增量扫描，将进行全量扫描")
-                println("--------------------------------------------LintIncrement--------------------------------------------")
+                printSplitLine(TAG)
                 return
             }
 
@@ -71,9 +73,13 @@ class IncrementUtils {
                     p.addFile(File(it))
                 }
             }
-            println("--------------------------------------------LintIncrement--------------------------------------------")
+            printSplitLine(TAG)
         }
     }
+}
+
+fun printSplitLine(tag: String) {
+    println("--------------------------------------------日志分割线：$tag--------------------------------------------")
 }
 
 
