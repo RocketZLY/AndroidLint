@@ -1,10 +1,12 @@
 package com.rocketzly.lintplugin.log
 
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
-import com.rocketzly.lintplugin.LintPluginManager
-import com.rocketzly.lintplugin.executor.ScriptExecutor
-import com.rocketzly.lintplugin.isRootProject
-import com.rocketzly.lintplugin.lintconfig.LintConfigHelper.Companion.XML_OUTPUT_RELATIVE_PATH
+import com.rocketzly.lintplugin.LintException
+import com.rocketzly.lintplugin.LintHelper
+import com.rocketzly.lintplugin.task.LintCreationAction
+import com.rocketzly.lintplugin.task.LintCreationAction.Companion.PARAM_NAME_CURRENT
+import com.rocketzly.lintplugin.task.LintCreationAction.Companion.PARAM_NAME_TARGET
+import com.rocketzly.lintplugin.task.LintOptionsInjector.Companion.XML_OUTPUT_RELATIVE_PATH
 import org.gradle.api.Project
 import java.io.File
 import javax.xml.parsers.DocumentBuilderFactory
@@ -13,73 +15,85 @@ import javax.xml.parsers.DocumentBuilderFactory
  * 添加执行日志
  * Created by rocketzly on 2020/8/30.
  */
-class LogHelper : LintPluginManager.LintHelper {
+class LogHelper : LintHelper {
 
     companion object {
         const val CONFIG_RELATIVE_PATH = "custom_lint_config.json"
     }
 
     override fun apply(project: Project) {
-        if (project.isRootProject()) return
-
         var startTime = 0L
-        project.afterEvaluate { p ->
-            p.tasks.forEach { task ->
-                if (task.name.startsWith("lint")) {
-                    task.doFirst {
-                        startTime = System.currentTimeMillis()
-                        printSplitLine("lint配置信息")
-                        val configFile = File(project.rootDir, CONFIG_RELATIVE_PATH)
-                        if (!configFile.exists() || !configFile.isFile) {
-                            println("配置文件未找到 Path：${configFile.absolutePath}")
-                        } else {
-                            println("配置文件加载成功 Path：${configFile.absolutePath}")
+        project.gradle.taskGraph.whenReady {
+            it.allTasks.find {
+                if (it.name == LintCreationAction.TASK_NAME_LINT_FULL ||
+                    it.name == LintCreationAction.TASK_NAME_LINT_INCREMENT
+                ) {
+                    return@find true
+                }
+                return@find false
+            }?.apply {
+                doFirst {
+                    if (it.name == LintCreationAction.TASK_NAME_LINT_INCREMENT) {
+                        if (!project.hasProperty(PARAM_NAME_TARGET)) {
+                            throw LintException("lintIncrement必须要target参数")
                         }
-                        println("本次扫描的issue id如下：")
-                        println((p.extensions.getByName("android") as? BaseAppModuleExtension)!!.lintOptions.check)
-                        printSplitLine("lint配置信息")
+                        if (!project.hasProperty(PARAM_NAME_CURRENT)) {
+                            throw LintException("lintIncrement必须要current参数")
+                        }
                     }
 
-                    task.doLast {
-                        val file = project.file(XML_OUTPUT_RELATIVE_PATH)
-                        if (!file.exists() || !file.isFile) {
-                            println("未找到${file.absolutePath}文件，无法打印lint结果日志")
-                            return@doLast
-                        }
-                        try {
-                            val parse =
-                                DocumentBuilderFactory.newInstance().newDocumentBuilder()
-                                    .parse(file)
-                            var errorCount = 0
-                            val summary = HashSet<String>()
-                            parse.getElementsByTagName("issue").apply {
-                                for (i in 0 until length) {
-                                    if (item(i).attributes.getNamedItem("severity").nodeValue == "Error") {
-                                        errorCount++
-                                        summary.add(item(i).attributes.getNamedItem("summary").nodeValue)
-                                    }
-                                }
-                            }
-                            printSplitLine("lint结果信息")
-                            if (errorCount == 0) {
-                                println("lint检查通过，未发现错误")
-                            } else {
-                                println("lint检查未通过，发现${errorCount}个错误")
-                                println("包括如下几类错误：")
-                                summary.forEach {
-                                    println(it)
-                                }
-                            }
-                            println("耗时：${System.currentTimeMillis() - startTime}ms")
-                            printSplitLine("lint结果信息")
+                    startTime = System.currentTimeMillis()
+                    printSplitLine("lint配置信息")
+                    val configFile = File(project.rootDir, CONFIG_RELATIVE_PATH)
+                    if (!configFile.exists() || !configFile.isFile) {
+                        println("配置文件未找到 Path：${configFile.absolutePath}")
+                    } else {
+                        println("配置文件加载成功 Path：${configFile.absolutePath}")
+                    }
+                    println("本次扫描的issue id如下：")
+                    println((project.extensions.getByName("android") as? BaseAppModuleExtension)!!.lintOptions.check)
+                    printSplitLine("lint配置信息")
+                }
+                doLast {
+                    val file = project.file(XML_OUTPUT_RELATIVE_PATH)
+                    if (!file.exists() || !file.isFile) {
+                        println("未找到${file.absolutePath}文件，无法分析lint结果")
+                        return@doLast
+                    }
 
-                            if (errorCount != 0) {//lint检查发现错误执行脚本
-                                ScriptExecutor.exec(project, errorCount, summary)
+                    var errorCount = 0
+                    val summary = HashSet<String>()
+                    try {
+                        val parse =
+                            DocumentBuilderFactory.newInstance().newDocumentBuilder()
+                                .parse(file)
+                        parse.getElementsByTagName("issue").apply {
+                            for (i in 0 until length) {
+                                if (item(i).attributes.getNamedItem("severity").nodeValue == "Error") {
+                                    errorCount++
+                                    summary.add(item(i).attributes.getNamedItem("summary").nodeValue)
+                                }
                             }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                            println("解析出错，无法打印lint结果日志")
                         }
+                        printSplitLine("lint结果信息")
+                        if (errorCount == 0) {
+                            println("lint检查通过，未发现错误")
+                        } else {
+                            println("lint检查未通过，发现${errorCount}个错误")
+                            println("包括如下几类错误：")
+                            summary.forEach {
+                                println(it)
+                            }
+                        }
+                        println("耗时：${System.currentTimeMillis() - startTime}ms")
+                        printSplitLine("lint结果信息")
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        println("解析出错，无法打印lint结果日志")
+                    }
+
+                    if (errorCount != 0) {
+                        throw  LintException("lint检查发现错误")
                     }
                 }
             }

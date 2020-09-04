@@ -48,10 +48,3 @@ subprojects {
         }
     }
 }
-
-apply plugin: 'com.rocketzly.lintPlugin'
-lintGlobalConfig {
-    currentBranch = "HEAD"
-    targetBranch = "origin/dev"
-    failScriptPath = getRootDir().path + "/lintNotification.py"
-}

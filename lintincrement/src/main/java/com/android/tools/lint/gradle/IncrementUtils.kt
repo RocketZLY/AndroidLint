@@ -15,45 +15,13 @@ class IncrementUtils {
     companion object {
 
         const val TAG = "lint增量信息"
-        
+
         @JvmStatic
         fun inject(project: Project, lintRequest: LintRequest) {
             //增量扫描逻辑
             printSplitLine(TAG)
-            var open = true
-            var currentBranch = ""
-            var targetBranch = ""
-
-            project.rootProject.extensions.findByName("lintGlobalConfig")?.let { lintGlobalConfig ->
-                lintGlobalConfig::class.java.superclass.apply {
-                    declaredFields.forEach {
-                        it.isAccessible = true
-
-                        when (it.name) {
-                            "currentBranch" -> currentBranch = it.get(lintGlobalConfig) as String
-                            "targetBranch" -> targetBranch = it.get(lintGlobalConfig) as String
-                            "isOpen" -> open = it.get(lintGlobalConfig) as Boolean
-                        }
-                    }
-                }
-            }
-
-
-            if (!open) {
-                println("rootProject.lintGlobalConfig.open为false，将进行全量扫描")
-                printSplitLine(TAG)
-                return
-            }
-            if (currentBranch.isEmpty()) {
-                println("rootProject未设置lintGlobalConfig.currentBranch，无法增量扫描，将进行全量扫描")
-                printSplitLine(TAG)
-                return
-            }
-            if (targetBranch.isEmpty()) {
-                println("rootProject未设置lintGlobalConfig.targetBranch，无法增量扫描，将进行全量扫描")
-                printSplitLine(TAG)
-                return
-            }
+            var currentBranch = project.properties["target"]
+            var targetBranch = project.properties["current"]
 
             val command =
                 "git diff $targetBranch $currentBranch --name-only --diff-filter=ACMRTUXB"
@@ -67,7 +35,7 @@ class IncrementUtils {
             val diffFileList = diffFileStr.split("\n")
 
             println("diff结果：")
-            println(diffFileStr)
+            println(diffFileStr.removeSuffix("\n"))
             lintRequest.getProjects()?.forEach { p ->
                 diffFileList.forEach {
                     p.addFile(File(it))
