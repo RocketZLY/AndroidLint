@@ -12,20 +12,10 @@ class DependencyHelper : LintHelper {
 
     companion object {
         const val DEPENDENCY_LINT_PATH = "com.rocketzly:lint:1.0.3"
-        const val DEPENDENCY_LINT_INCREMENT_PATH = "com.rocketzly:lintIncrement:0.0.3"
+        const val DEPENDENCY_LINT_INCREMENT_PATH = "com.rocketzly:lintIncrement:0.0.4"
 
         fun injectLintIncrement(project: Project) {
-//            project.dependencies.add(LintBaseTask.LINT_CLASS_PATH, DEPENDENCY_LINT_INCREMENT_PATH)
-
-            project.dependencies.add(
-                LintBaseTask.LINT_CLASS_PATH,
-                project.fileTree(
-                    mapOf(
-                        "dir" to "${project.rootDir.absolutePath}/lintincrement/build/export",
-                        "include" to listOf("*.jar")
-                    )
-                )
-            )
+            project.dependencies.add(LintBaseTask.LINT_CLASS_PATH, DEPENDENCY_LINT_INCREMENT_PATH)
         }
     }
 

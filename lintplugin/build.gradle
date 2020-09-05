@@ -15,7 +15,7 @@ sourceCompatibility = "1.7"
 targetCompatibility = "1.7"
 
 group = 'com.rocketzly'
-version = '0.0.4'
+version = '0.0.5'
 
 // 发布到本地仓库
 uploadArchives {

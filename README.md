@@ -8,7 +8,9 @@
 
 **目前已经支持增量扫描功能，速度更快。**
 
-具体食用详情可以参考[Android Lint代码检查实践](https://juejin.im/post/6861562664582119432)。如果有感兴趣的大佬，欢迎一起开发、交流。
+**本来加入lint发现错误后执行脚本的功能，但由于在Ci中无法通过Git命令拿到想要信息，夭折了。**
+
+具体在项目中使用可以参考[Android Lint代码检查实践](https://juejin.im/post/6861562664582119432)。如果有感兴趣的大佬，欢迎一起开发、交流。
 
 
 
@@ -16,16 +18,16 @@
 > .<br>
   ├── app												// demo工程用来展示lint检查效果<br>
   ├── checks										  // lint规则代码<br>
-  ├── custom_lint_config.json			// 自定义配置文件<br>
+  ├── custom_lint_config.json			// 规则配置文件<br>
   ├── lintlibrary									// 空项目，依赖了checks用来生成aar包<br>
-  ├── lintincrement							 // lint增量扫描代码<br>
-  ├── lintplugin									// lint插件用来简化lint配置，并加入日志输出<br>
+  ├── lintincrement							 // 实现lint增量扫描注入的代码<br>
+  ├── lintplugin									// lint插件，用来增量扫描、简化配置，日志输出<br>
 
 
 
 ## 依赖
 
-**需要Android Gradle在3.5.0以上**
+**需要Android Gradle Plugin在3.5.0以上，目前我使用的是3.5.3实测ok。**
 
 根目录gradle
 ```groovy
@@ -34,7 +36,7 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath "com.rocketzly:lintPlugin:0.0.2"
+    classpath "com.rocketzly:lintPlugin:0.0.5"
   }
 }
 ```
@@ -45,9 +47,44 @@ apply plugin: "com.rocketzly.lintPlugin"
 
 
 
-## 配置
+## 使用
 
-### module gradle支持的配置
+添加依赖后，并在项目根目录下添加custom_lint_config.json规则配置文件（关于配置可以看后面的规则配置）
+
+### 编码实时提示
+
+添加依赖和配置文件后Rebuild一下（如果还不行则执行次`./gradlew :${moduleName}:lintFull`）即可编码实时提示。
+
+![](http://rocketzly.androider.top/lint_as_effect.png)
+
+**有一点需要注意，AS对于Lint实时提示支持的不算特别好，少数情况下会出现编码时提示不了的情况，但是命令行执行生成报告结果都是正常的，所以以报告结果为准。**
+
+### 命令行执行
+
+目前支持两个命令
+
+- `./gradlew lintFull` 全量扫描（只扫自定义issue）
+- `./gradlew lintIncrement -Pcurrent="xxx" -Ptarget="xxx"`  增量扫描（只扫自定义issue）
+
+**提一嘴增量扫描是通过`git diff $target $current --name-only --diff-filter=ACMRTUXB `去找到变更文件的，所以只要是git命令支持的都可以作为current和target的入参。**
+
+那么添加依赖和配置文件后，Terminal执行`./gradlew :app:lintFull`或者`./gradlew :app:lintIncrement -Pcurrent="xxx" -Ptarget="xxx`就可以看到检查结果。
+
+以本库为例，执行`./gradlew :app:lintIncrement -Pcurrent="HEAD" -Ptarget="dev"`结果如下：
+
+![](http://rocketzly.androider.top/lint_result3.png)
+
+查看生成的Html文件可以查看详细lint报告
+
+![](http://rocketzly.androider.top/lint_result4.png)
+
+**最新版本代码日志和报告可能稍有不同但不影响结果**
+
+### 
+
+## 插件配置
+
+### module gradle
 
 ```groovy
 lintConfig {
@@ -57,61 +94,20 @@ lintConfig {
 
 - baseline：是否生成baseline文件，默认为false不生成，如果需要生成则设置为true（可选项）
 
-### 根目录gradle支持的配置
+### 默认值（目前还不支持配置，如有需要可以提issue）
 
-```groovy
-    ext {
-      	lintIncrement = true//增量扫描开关
-        currentBranch = "HEAD"//增量扫描当前分支名
-        targetBranch = "origin/dev"//增量扫描基准分支名
-    }
-```
-
-- lintIncrement：增量扫描开关，默认为true开启（可选项）
-- currentBranch：增量扫描当前分支名，如开启增量扫描必须设置该值（必填）
-- targetBranch：增量扫描基准分支名，如开启增量扫描必须设置该值（必填）
-
-增量扫描是拿currentBranch与targetBranch进行diff找出修改文件，然后进行扫描。
+- 只扫描自定义Issue
+- 不会将warning视为error
+- 只有发现error的时候才会停止task执行
+- html报告地址：`${modulePath}/build/reports/lint-results.html`
+- xml报告地址：`${modulePath}/build/reports/lint-results.xml`
+- baseline地址：`${modulePath}/lint-baseline.xml`
 
 
 
-## 使用
+## 规则配置
 
-添加依赖后，并在项目根目录下添加custom_lint_config.json配置文件（关于配置可以看下一小节）
-
-### 编码实时提示
-
-添加依赖和配置文件后Rebuild一下（如果还不行则执行次`./gradlew :${moduleName}:lint${flavor}${buildType}`）即可编码实时提示。
-
-![](http://rocketzly.androider.top/lint_as_effect.png)
-
-**有一点需要注意，AS对于Lint实时提示支持的不算特别好，少数情况下会出现编码时提示不了的情况，但是命令行执行结果都是正常的，所以以命令行执行结果为准。**
-
-### 命令行执行
-
-添加依赖和配置文件后，Terminal执行`./gradlew :${moduleName}:lint${flavor}${buildType}`就可以看到检查结果。
-
-以本库为例，执行`./gradlew :app:lintDebug`结果如下：
-
-![](http://rocketzly.androider.top/lint_increment_result2.png)
-
-LintConfig和LintResult中的信息是在LintPlugin添加的日志信息。
-
-LintIncrement是在增量扫描时候的日志信息。
-
-查看生成的Html文件可以查看详细lint报告
-
-![](http://rocketzly.androider.top/lint_report_github.png)
-
-![](http://rocketzly.androider.top/lint_report_github2.png)
-
-**最新版本代码日志和报告可能稍有不同但不影响结果**
-
-
-
-## 配置
-
-配置是从根目录custom_lint_config.json文件读取。
+自定义Issue规则是从根目录custom_lint_config.json文件读取。
 
 目前支持五大类规则（后期会继续增加、完善规则，欢迎有兴趣大佬一起开发）
 
