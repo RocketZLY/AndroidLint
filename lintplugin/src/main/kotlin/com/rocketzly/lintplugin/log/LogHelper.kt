@@ -4,8 +4,8 @@ import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import com.rocketzly.lintplugin.LintException
 import com.rocketzly.lintplugin.LintHelper
 import com.rocketzly.lintplugin.task.LintCreationAction
-import com.rocketzly.lintplugin.task.LintCreationAction.Companion.PARAM_NAME_CURRENT
-import com.rocketzly.lintplugin.task.LintCreationAction.Companion.PARAM_NAME_TARGET
+import com.rocketzly.lintplugin.task.LintCreationAction.Companion.PARAM_NAME_REVISION
+import com.rocketzly.lintplugin.task.LintCreationAction.Companion.PARAM_NAME_BASELINE
 import com.rocketzly.lintplugin.task.LintOptionsInjector.Companion.XML_OUTPUT_RELATIVE_PATH
 import org.gradle.api.Project
 import java.io.File
@@ -34,11 +34,11 @@ class LogHelper : LintHelper {
             }?.apply {
                 doFirst {
                     if (it.name == LintCreationAction.TASK_NAME_LINT_INCREMENT) {
-                        if (!project.hasProperty(PARAM_NAME_TARGET)) {
-                            throw LintException("lintIncrement必须要target参数")
+                        if (!project.hasProperty(PARAM_NAME_BASELINE)) {
+                            throw LintException("lintIncrement必须要${PARAM_NAME_BASELINE}参数")
                         }
-                        if (!project.hasProperty(PARAM_NAME_CURRENT)) {
-                            throw LintException("lintIncrement必须要current参数")
+                        if (!project.hasProperty(PARAM_NAME_REVISION)) {
+                            throw LintException("lintIncrement必须要${PARAM_NAME_REVISION}参数")
                         }
                     }
 

@@ -3,6 +3,9 @@ buildscript {
         kotlin_version = '1.3.72'
         lint_version = '26.5.3'
         agp_version = '3.5.3'
+        upload_lint_plugin = false
+        upload_lint_library = false
+        upload_lint_increment = false
     }
     repositories {
         maven {

@@ -20,11 +20,11 @@ class IncrementUtils {
         fun inject(project: Project, lintRequest: LintRequest) {
             //增量扫描逻辑
             printSplitLine(TAG)
-            var currentBranch = project.properties["target"]
-            var targetBranch = project.properties["current"]
+            var revision = project.properties["revision"]
+            var baseline = project.properties["baseline"]
 
             val command =
-                "git diff $targetBranch $currentBranch --name-only --diff-filter=ACMRTUXB"
+                "git diff $baseline $revision --name-only --diff-filter=ACMRTUXB"
             println("开始执行：")
             println(command)
             val byteArray = Runtime.getRuntime()

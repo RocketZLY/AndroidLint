@@ -16,8 +16,8 @@ class LintCreationAction {
     companion object {
         const val TASK_NAME_LINT_FULL = "lintFull"
         const val TASK_NAME_LINT_INCREMENT = "lintIncrement"
-        const val PARAM_NAME_TARGET = "target"
-        const val PARAM_NAME_CURRENT = "current"
+        const val PARAM_NAME_BASELINE = "baseline"
+        const val PARAM_NAME_REVISION = "revision"
     }
 
     open class Action(
@@ -54,7 +54,9 @@ class LintCreationAction {
         private val variantScopes: List<VariantScope>
     ) : Action(project, TASK_NAME_LINT_INCREMENT, scope, variantScopes) {
         override fun configure(task: LintTask) {
-            DependencyHelper.injectLintIncrement(project)//加入支持增量LintGradleClient类替换原有类
+            if (project.gradle.startParameter.taskNames.find { it.contains(TASK_NAME_LINT_INCREMENT) } != null) {
+                DependencyHelper.injectLintIncrement(project)//加入支持增量LintGradleClient类替换原有类
+            }
             super.configure(task)
         }
     }

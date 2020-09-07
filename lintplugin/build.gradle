@@ -15,7 +15,7 @@ sourceCompatibility = "1.7"
 targetCompatibility = "1.7"
 
 group = 'com.rocketzly'
-version = '0.0.5'
+version = '0.0.6'
 
 // 发布到本地仓库
 uploadArchives {
@@ -41,12 +41,14 @@ gradlePlugin {
 uploadArchives.dependsOn(rootProject.getChildProjects().get("lintincrement").getTasks().getByName("makeJar"))
 
 
-apply plugin: 'com.novoda.bintray-release'
-publish {
-    userOrg = 'zhuliyuan' //bintray注册的用户名（不是邮箱）
-    groupId = 'com.rocketzly'
-    artifactId = 'lintPlugin' //项目名称
-    publishVersion = version //版本号
-    desc = 'an android lint plugin,used to check code specifications, bugs, etc' //项目描述。可空。
-    website = 'https://github.com/RocketZLY/AndroidLint' //项目地址，一般填github地址。可空。
+if (upload_lint_plugin) {
+    apply plugin: 'com.novoda.bintray-release'
+    publish {
+        userOrg = 'zhuliyuan' //bintray注册的用户名（不是邮箱）
+        groupId = 'com.rocketzly'
+        artifactId = 'lintPlugin' //项目名称
+        publishVersion = version //版本号
+        desc = 'an android lint plugin,used to check code specifications, bugs, etc' //项目描述。可空。
+        website = 'https://github.com/RocketZLY/AndroidLint' //项目地址，一般填github地址。可空。
+    }
 }
