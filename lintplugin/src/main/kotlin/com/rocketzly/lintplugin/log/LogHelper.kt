@@ -3,6 +3,7 @@ package com.rocketzly.lintplugin.log
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import com.rocketzly.lintplugin.LintException
 import com.rocketzly.lintplugin.LintHelper
+import com.rocketzly.lintplugin.executor.ScriptExecutor
 import com.rocketzly.lintplugin.task.LintCreationAction
 import com.rocketzly.lintplugin.task.LintCreationAction.Companion.PARAM_NAME_REVISION
 import com.rocketzly.lintplugin.task.LintCreationAction.Companion.PARAM_NAME_BASELINE
@@ -93,6 +94,7 @@ class LogHelper : LintHelper {
                     }
 
                     if (errorCount != 0) {
+                        ScriptExecutor.exec(project, errorCount, summary)
                         throw  LintException("lint检查发现错误")
                     }
                 }
