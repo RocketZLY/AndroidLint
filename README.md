@@ -1,14 +1,14 @@
 # Android Lint
 
-## 简介
+![](https://img.shields.io/badge/Download-0.0.6-success) ![](https://img.shields.io/badge/AGP-3.5.0%2B-orange) ![](https://img.shields.io/badge/License-Apache--2.0-blue)
 
-这是一个通用Android Lint库，你可以用它来检查代码规范、bug、资源命名等。
+这是一个通用Android Lint库，你可以用它来检查代码规范、bug、资源命名等✌️。
 
-本库最大特点是通用，相较于其他Lint库（规则直接在代码写死），最大的不同是，规则全靠配置生成，更加灵活，在多团队协作下，只需拷贝配置文件，改下提示信息即可完成迁移。
+**本库最大特点是通用，相较于其他Lint库（规则直接在代码写死），最大的不同是，规则全靠配置生成，更加灵活，在多团队协作下，只需拷贝配置文件，改下提示信息即可完成迁移。**
 
-**目前已经支持增量扫描功能，速度更快。**
+**支持增量扫描功能，速度更快。**
 
-**本来加入lint发现错误后执行脚本的功能，但由于在Ci中无法通过Git命令拿到想要信息，夭折了。**
+**支持lint发现错误后自动执行脚本功能，更加友好。**
 
 具体在项目中使用可以参考[Android Lint代码检查实践](https://juejin.im/post/6861562664582119432)。如果有感兴趣的大佬，欢迎一起开发、交流。
 
@@ -21,13 +21,13 @@
   ├── custom_lint_config.json			// 规则配置文件<br>
   ├── lintlibrary									// 空项目，依赖了checks用来生成aar包<br>
   ├── lintincrement							 // 实现lint增量扫描注入的代码<br>
-  ├── lintplugin									// lint插件，用来增量扫描、简化配置，日志输出<br>
+  ├── lintplugin									// lint插件，用来增量扫描、执行脚本、简化配置、日志输出<br>
 
 
 
 ## 依赖
 
-**需要Android Gradle Plugin在3.5.0以上，目前我使用的是3.5.3实测ok。**
+**需要Android Gradle Plugin在3.5.0以上，目前我项目使用的是3.5.3实测ok。**
 
 根目录gradle
 ```groovy
@@ -36,7 +36,7 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath "com.rocketzly:lintPlugin:0.0.5"
+    classpath "com.rocketzly:lintPlugin:$lastVersion"
   }
 }
 ```
@@ -61,28 +61,43 @@ apply plugin: "com.rocketzly.lintPlugin"
 
 ### 命令行执行
 
-目前支持两个命令
+目前支持两个命令：
 
 - `./gradlew lintFull` 全量扫描（只扫自定义issue）
-- `./gradlew lintIncrement -Pcurrent="xxx" -Ptarget="xxx"`  增量扫描（只扫自定义issue）
+- `./gradlew lintIncrement -Pbaseline="xxx" -Prevision="xxx"`  增量扫描（只扫自定义issue）
 
-**提一嘴增量扫描是通过`git diff $target $current --name-only --diff-filter=ACMRTUXB `去找到变更文件的，所以只要是git命令支持的都可以作为current和target的入参。**
+参数描述：
 
-那么添加依赖和配置文件后，Terminal执行`./gradlew :app:lintFull`或者`./gradlew :app:lintIncrement -Pcurrent="xxx" -Ptarget="xxx`就可以看到检查结果。
+- baseline：执行lintIncrement必须参数，用来设置基线代码分支或者commit节点
+- revision：执行lintIncrement必须参数，用来设置最新分支或者commit节点
+- scriptPath：可选参数，在lint发现错误的时候自动执行脚本路径，目前只支持执行python3脚本
 
-以本库为例，执行`./gradlew :app:lintIncrement -Pcurrent="HEAD" -Ptarget="dev"`结果如下：
+脚本入参：
 
-![](http://rocketzly.androider.top/lint_result3.png)
+- reportPath：html报告地址
+- userName：操作人名字
+- moduleName：模块名字
+- errorCount：错误数
+
+具体参数获方法取可以参照项目中[lintNotification.py](./lintNotification.py)脚本
+
+**顺带提一句增量扫描是通过`git diff $baseline $revision --name-only --diff-filter=ACMRTUXB `去找到变更文件的，所以只要是git命令支持的都可以作为baseline和revision的入参。**
+
+那么添加依赖和配置文件后，Terminal执行`./gradlew :app:lintFull`或者`./gradlew :app:lintIncrement -Pbaseline="xxx" -Prevision="xxx`就可以看到检查结果。
+
+以本库为例，执行`./gradlew :app:lintIncrement -Pbaseline="dev" -Prevision="HEAD" -PscriptPath="lintNotification.py"`结果如下：
+
+![](http://rocketzly.androider.top/lint_result5.png)
 
 查看生成的Html文件可以查看详细lint报告
 
-![](http://rocketzly.androider.top/lint_result4.png)
+![](http://rocketzly.androider.top/lint_result6.png)
 
 **最新版本代码日志和报告可能稍有不同但不影响结果**
 
-### 
 
-## 插件配置
+
+## Lint配置
 
 ### module gradle
 
@@ -181,12 +196,6 @@ message会影响到AS实时提示展示的信息和report中展示信息。
 severity则是对应AS实时提示的错误等级和report中错误等级。
 
 具体demo可以看项目根目录下[custom_lint_config.json](./custom_lint_config.json)。
-
-
-
-## 协议
-
-[Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
 
 
 
