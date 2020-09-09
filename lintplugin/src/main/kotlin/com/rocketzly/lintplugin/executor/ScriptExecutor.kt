@@ -15,7 +15,7 @@ class ScriptExecutor {
     companion object {
 
         private const val TAG = "lint发现错误执行脚本信息"
-        private const val PARAM_NAME_FAIL_SCRIPT_PATH = "failScriptPath"
+        private const val PARAM_NAME_FAIL_SCRIPT_PATH = "scriptPath"
 
         fun exec(
             project: Project,
@@ -26,7 +26,7 @@ class ScriptExecutor {
 
             val scriptPath = project.properties[PARAM_NAME_FAIL_SCRIPT_PATH] as? String?
             if (scriptPath == null || scriptPath.isEmpty()) {
-                println("未输入failScriptPath参数，将不会自动执行脚本")
+                println("未输入${PARAM_NAME_FAIL_SCRIPT_PATH}参数，将不会自动执行脚本")
                 printSplitLine(TAG)
                 return
             }
