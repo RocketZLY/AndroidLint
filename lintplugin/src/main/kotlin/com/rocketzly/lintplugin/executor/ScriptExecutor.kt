@@ -3,6 +3,7 @@ package com.rocketzly.lintplugin.executor
 import com.rocketzly.lintplugin.log.printSplitLine
 import com.rocketzly.lintplugin.task.LintOptionsInjector.Companion.HTML_OUTPUT_RELATIVE_PATH
 import org.gradle.api.Project
+import java.io.File
 
 /**
  * User: Rocket
@@ -31,18 +32,29 @@ class ScriptExecutor {
                 return
             }
 
-            val executor = getExecutor("")
-            //git log -1 --pretty=format:'%aN' 用这个命令获取提交人有一定隐患，用rebase的时候可能会出问题
-            val userName = String(
-                Runtime.getRuntime()
-                    .exec("git log -1 --pretty=format:%aN").inputStream.readBytes(),
-                Charsets.UTF_8
-            )
+            val file = File(scriptPath)
+            if (!file.exists() || !file.isFile) {
+                println("未找到${scriptPath}文件，将不会自动执行脚本")
+                printSplitLine(TAG)
+                return
+            }
+
+            val executor = getExecutor(scriptPath)
+            if (executor == null) {
+                println(
+                    "无法识别${scriptPath}脚本类型，" +
+                            "目前只支持[\".sh\",\".py\"]结尾文件，将不会自动执行脚本"
+                )
+                printSplitLine(TAG)
+                return
+            }
+
             val reportPath = project.file(HTML_OUTPUT_RELATIVE_PATH).absolutePath
             executor.exec(
+                project,
                 scriptPath,
                 reportPath,
-                userName,
+                getUserName(),
                 project.name,
                 errorCount,
                 errorSummary
@@ -51,11 +63,31 @@ class ScriptExecutor {
             printSplitLine(TAG)
         }
 
-        private fun getExecutor(type: String): Executor = Py3Executor()
+        private fun getExecutor(scriptPath: String): Executor? {
+            var scriptType = ""
+            try {
+                scriptType = scriptPath.split(".")[1]
+            } catch (e: Exception) {
+                return null
+            }
+            return when (scriptType) {
+                "py" -> Py3Executor()
+                "sh" -> ShellExecutor()
+                else -> null
+            }
+        }
+
+        //git log -1 --pretty=format:'%aN' 用这个命令获取提交人有一定隐患，用rebase的时候可能会出问题
+        private fun getUserName() = String(
+            Runtime.getRuntime()
+                .exec("git log -1 --pretty=format:%aN").inputStream.readBytes(),
+            Charsets.UTF_8
+        )
     }
 
     interface Executor {
         fun exec(
+            project: Project,
             scriptPath: String,
             reportPath: String,
             userName: String,
