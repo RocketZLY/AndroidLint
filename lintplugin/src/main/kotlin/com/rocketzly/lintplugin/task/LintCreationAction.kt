@@ -28,10 +28,6 @@ class LintCreationAction {
     ) : LintTask.CreationAction(taskName, scope, variantScopes) {
         override fun configure(task: LintTask) {
             super.configure(task)
-            //lint类都是通过该classloader加载，而loader是静态变量，只会创建一次，
-            //又由于increment需要插入类到该classloader头部，而full又不需要
-            //所以在每次执行时强制改为null废除缓存，每次重新加载避免问题
-            ReflectiveLintRunner.loader = null
             LintOptionsInjector.inject(project, task.lintOptions)//修改lintOptions
         }
     }
@@ -54,10 +50,29 @@ class LintCreationAction {
         private val variantScopes: List<VariantScope>
     ) : Action(project, TASK_NAME_LINT_INCREMENT, scope, variantScopes) {
         override fun configure(task: LintTask) {
-            if (project.gradle.startParameter.taskNames.find { it.contains(TASK_NAME_LINT_INCREMENT) } != null) {
-                DependencyHelper.injectLintIncrement(project)//加入支持增量LintGradleClient类替换原有类
+            project.gradle.taskGraph.apply {
+                beforeTask {
+                    if (it.name == TASK_NAME_LINT_INCREMENT) {
+                        resetLintClassLoader()
+                    }
+
+                }
+                afterTask {
+                    if (it.name == TASK_NAME_LINT_INCREMENT) {
+                        resetLintClassLoader()
+                    }
+                }
             }
+            DependencyHelper.injectLintIncrement(project)//加入支持增量LintGradleClient类替换原有类
             super.configure(task)
+        }
+
+        private fun resetLintClassLoader() {
+            //lint类都是通过该classloader加载，而loader是静态变量，只会创建一次，
+            //又由于increment需要插入类到该classloader头部实现增量扫描，而full和系统lint又不需要
+            //所以在increment执行前将classloader置为null，使其重新加载将类插入
+            //在increment执行后将classloader置为null，避免插入类对其他lintTask造成的影响
+            ReflectiveLintRunner.loader = null
         }
     }
 
