@@ -18,6 +18,11 @@ class IncrementUtils {
 
         @JvmStatic
         fun inject(project: Project, lintRequest: LintRequest) {
+            //当前执行的不是增量扫描
+            if (project.gradle.startParameter.taskNames.find { it.contains("lintIncrement") } == null) {
+                return
+            }
+
             //增量扫描逻辑
             printSplitLine(TAG)
             var revision = project.properties["revision"]
