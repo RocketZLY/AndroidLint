@@ -350,17 +350,16 @@ private constructor(
                                     }
                                 }
                             }
-                            return registryClassToJarFile
+                        } else {
+                            client.log(
+                                Severity.ERROR, null,
+                                "Custom lint rule jar %1\$s does not contain a valid " +
+                                        "registry manifest key (%2\$s).\n" +
+                                        "Either the custom jar is invalid, or it uses an outdated " +
+                                        "API not supported this lint client",
+                                jarFile.path, MF_LINT_REGISTRY
+                            )
                         }
-
-                        client.log(
-                            Severity.ERROR, null,
-                            "Custom lint rule jar %1\$s does not contain a valid " +
-                                    "registry manifest key (%2\$s).\n" +
-                                    "Either the custom jar is invalid, or it uses an outdated " +
-                                    "API not supported this lint client",
-                            jarFile.path, MF_LINT_REGISTRY
-                        )
                     }
                 }
             }
