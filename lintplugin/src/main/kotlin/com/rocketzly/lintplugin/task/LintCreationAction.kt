@@ -5,6 +5,9 @@ import com.android.tools.lint.gradle.api.ReflectiveLintRunner
 import com.rocketzly.lintplugin.dependency.DependencyHelper
 import org.gradle.api.Project
 import org.gradle.api.Task
+import sun.misc.URLClassPath
+import java.net.URL
+import kotlin.concurrent.thread
 
 /**
  * User: Rocket
@@ -32,7 +35,7 @@ class LintCreationAction {
     ) : LintTask.CreationAction(taskName, scope, variantScopes) {
         override fun configure(task: LintTask) {
             //加入补丁修复lint的bug同时支持增量扫描功能，需要在super#configure之前调用
-            DependencyHelper.injectLintIncrement(project)
+            DependencyHelper.injectLintPatch(project)
             super.configure(task)
             //修改lintOptions，需要在super#configure之后调用
             LintOptionsInjector.inject(project, task.lintOptions)
@@ -41,6 +44,7 @@ class LintCreationAction {
                 beforeTask {
                     if (!checkTaskIsIncrementOrFullLint(it)) return@beforeTask
                     resetLintClassLoader()
+                    ensurePatchSuccess()
                 }
                 afterTask {
                     if (!checkTaskIsIncrementOrFullLint(it)) return@afterTask
@@ -57,6 +61,43 @@ class LintCreationAction {
             //所以在increment和full执行前将classloader置为null，使其重新加载将类插入
             //在increment和full执行后将classloader置为null，避免插入类对其他lintTask造成的影响
             ReflectiveLintRunner.loader = null
+        }
+
+        /**
+         * 确保补丁成功加载
+         * 原理：在classloader加载成功后，将lintPatch移动到path最前面，确保补丁一定被应用
+         */
+        private fun ensurePatchSuccess() {
+            thread {
+                while (true) {
+                    if (ReflectiveLintRunner.loader != null) {
+                        val urlClassPath = ReflectiveLintRunner.loader!!::class.java
+                            .superclass
+                            .getDeclaredField("ucp")
+                            .run {
+                                isAccessible = true
+                                get(ReflectiveLintRunner.loader) as URLClassPath
+                            }
+
+                        val path = urlClassPath::class.java
+                            .getDeclaredField("path")
+                            .run {
+                                isAccessible = true
+                                get(urlClassPath) as ArrayList<URL>
+                            }
+                        var index = -1
+                        path.forEachIndexed { i, url ->
+                            if (url.path.contains("lintPatch")) {
+                                index = i
+                                return@forEachIndexed
+                            }
+                        }
+                        if (index != -1)
+                            path.add(0, path.removeAt(index))
+                        return@thread
+                    }
+                }
+            }
         }
     }
 

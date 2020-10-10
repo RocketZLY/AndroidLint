@@ -50,8 +50,7 @@ private constructor(
     registry: IssueRegistry
 ) : IssueRegistry() {
 
-    override fun cacheable(): Boolean =
-        LintClient.isStudio
+    override fun cacheable(): Boolean = LintClient.isStudio
     override val issues: List<Issue> = registry.issues.toList()
     private var timestamp: Long = jarFile.lastModified()
 
@@ -61,11 +60,7 @@ private constructor(
     init {
         val loader = registry.javaClass.classLoader
         if (loader is URLClassLoader) {
-            loadAndCloseURLClassLoader(
-                client,
-                jarFile,
-                loader
-            )
+            loadAndCloseURLClassLoader(client, jarFile, loader)
         }
     }
 
@@ -103,10 +98,7 @@ private constructor(
             currentProject: Project?
         ): List<JarFileIssueRegistry> {
             val registryMap = try {
-                findRegistries(
-                    client,
-                    jarFiles
-                )
+                findRegistries(client, jarFiles)
             } catch (e: IOException) {
                 client.log(e, "Could not load custom lint check jar files: ${e.message}")
                 return emptyList()
@@ -121,12 +113,7 @@ private constructor(
 
             for ((registryClass, jarFile) in registryMap) {
                 try {
-                    val registry = get(
-                        client,
-                        registryClass,
-                        jarFile,
-                        currentProject
-                    ) ?: continue
+                    val registry = get(client, registryClass, jarFile, currentProject) ?: continue
                     registries.add(registry)
                 } catch (e: Throwable) {
                     client.log(e, "Could not load custom lint check jar file %1\$s", jarFile)
@@ -160,20 +147,14 @@ private constructor(
             }
 
             // Ensure that the scope-to-detector map doesn't return stale results
-            reset()
+            IssueRegistry.reset()
 
-            val userRegistry =
-                loadIssueRegistry(
-                    client, jarFile, registryClassName,
-                    currentProject
-                )
+            val userRegistry = loadIssueRegistry(
+                client, jarFile, registryClassName,
+                currentProject
+            )
             return if (userRegistry != null) {
-                val jarIssueRegistry =
-                    JarFileIssueRegistry(
-                        client,
-                        jarFile,
-                        userRegistry
-                    )
+                val jarIssueRegistry = JarFileIssueRegistry(client, jarFile, userRegistry)
                 cache!![jarFile] = SoftReference(jarIssueRegistry)
                 jarIssueRegistry
             } else {
@@ -186,9 +167,7 @@ private constructor(
             return if (registries.size == 1) {
                 registries[0]
             } else {
-                CompositeIssueRegistry(
-                    registries.toList()
-                )
+                CompositeIssueRegistry(registries.toList())
             }
         }
 
@@ -219,10 +198,7 @@ private constructor(
                     registry.issues
                 } catch (e: Throwable) {
                     val stacktrace = StringBuilder()
-                    LintDriver.appendStackTraceSummary(
-                        e,
-                        stacktrace
-                    )
+                    LintDriver.appendStackTraceSummary(e, stacktrace)
                     val message = "Lint found one or more custom checks that could not " +
                             "be loaded. The most likely reason for this is that it is using an " +
                             "older, incompatible or unsupported API in lint. Make sure these " +
@@ -230,11 +206,8 @@ private constructor(
                             "is $className. The class loading issue is ${e.message}: $stacktrace"
 
                     LintClient.report(
-                        client = client,
-                        issue = OBSOLETE_LINT_CHECK,
-                        message = message,
-                        file = jarFile,
-                        project = currentProject
+                        client = client, issue = OBSOLETE_LINT_CHECK,
+                        message = message, file = jarFile, project = currentProject
                     )
                     return null
                 }
@@ -252,11 +225,8 @@ private constructor(
                                 "current lint API level is $CURRENT_API " +
                                 "(${describeApi(CURRENT_API)})"
                         LintClient.report(
-                            client = client,
-                            issue = OBSOLETE_LINT_CHECK,
-                            message = message,
-                            file = jarFile,
-                            project = currentProject
+                            client = client, issue = OBSOLETE_LINT_CHECK,
+                            message = message, file = jarFile, project = currentProject
                         )
                         // Not returning here: try to run the checks
                     } else {
@@ -268,11 +238,8 @@ private constructor(
                                         "lint checks are intended for a newer lint version; please " +
                                         "upgrade"
                                 LintClient.report(
-                                    client = client,
-                                    issue = OBSOLETE_LINT_CHECK,
-                                    message = message,
-                                    file = jarFile,
-                                    project = currentProject
+                                    client = client, issue = OBSOLETE_LINT_CHECK,
+                                    message = message, file = jarFile, project = currentProject
                                 )
                                 return null
                             }
@@ -313,11 +280,8 @@ private constructor(
                     }
 
                     LintClient.report(
-                        client = client,
-                        issue = OBSOLETE_LINT_CHECK,
-                        message = message,
-                        file = jarFile,
-                        project = currentProject
+                        client = client, issue = OBSOLETE_LINT_CHECK,
+                        message = message, file = jarFile, project = currentProject
                     )
                     // Not returning here: try to run the checks
                 }
@@ -386,17 +350,17 @@ private constructor(
                                     }
                                 }
                             }
-                        } else {
-                            client.log(
-                                Severity.ERROR, null,
-                                "Custom lint rule jar %1\$s does not contain a valid " +
-                                        "registry manifest key (%2\$s).\n" +
-                                        "Either the custom jar is invalid, or it uses an outdated " +
-                                        "API not supported this lint client",
-                                jarFile.path,
-                                MF_LINT_REGISTRY
-                            )
+                            return registryClassToJarFile
                         }
+
+                        client.log(
+                            Severity.ERROR, null,
+                            "Custom lint rule jar %1\$s does not contain a valid " +
+                                    "registry manifest key (%2\$s).\n" +
+                                    "Either the custom jar is invalid, or it uses an outdated " +
+                                    "API not supported this lint client",
+                            jarFile.path, MF_LINT_REGISTRY
+                        )
                     }
                 }
             }

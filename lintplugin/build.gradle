@@ -38,8 +38,6 @@ gradlePlugin {
     }
 }
 
-uploadArchives.dependsOn(rootProject.getChildProjects().get("lintincrement").getTasks().getByName("makeJar"))
-
 
 if (upload_lint_plugin) {
     apply plugin: 'com.novoda.bintray-release'

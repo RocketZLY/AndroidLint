@@ -5,7 +5,7 @@ buildscript {
         agp_version = '3.5.3'
         upload_lint_plugin = false
         upload_lint_library = false
-        upload_lint_increment = false
+        upload_lint_patch = false
     }
     repositories {
         maven {
