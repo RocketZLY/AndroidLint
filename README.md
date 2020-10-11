@@ -1,16 +1,24 @@
 # Android Lint
 
-![](https://img.shields.io/badge/Download-0.0.6-success) ![](https://img.shields.io/badge/AGP-3.5.0%2B-orange) ![](https://img.shields.io/badge/License-Apache--2.0-blue)
+![](https://img.shields.io/badge/Download-0.0.7-success) ![](https://img.shields.io/badge/AGP-3.5.0%2B-orange) ![](https://img.shields.io/badge/License-Apache--2.0-blue)
 
 这是一个通用Android Lint库，你可以用它来检查代码规范、bug、资源命名等✌️。
 
-**本库最大特点是通用，相较于其他Lint库（规则直接在代码写死），最大的不同是，规则全靠配置生成，更加灵活，在多团队协作下，只需拷贝配置文件，改下提示信息即可完成迁移。**
+**本库最大特点是通用，相较于其他Lint库（规则直接在代码写死），最大的不同是，规则全靠配置生成，更加灵活，在多团队协作下，只需拷贝配置文件，修改提示信息即可完成迁移。**
 
 **支持增量扫描功能，速度更快。**
 
 **支持lint发现错误后自动执行脚本功能，更加友好。**
 
-具体在项目中使用可以参考[Android Lint代码检查实践](https://juejin.im/post/6861562664582119432)。如果有感兴趣的大佬，欢迎一起开发、交流。
+对于增量扫描原理可以看[Lint增量扫描实践](https://juejin.im/post/6871128918611460110)，具体在项目中使用可以参考[Android Lint代码检查实践](https://juejin.im/post/6861562664582119432)。
+
+如果有感兴趣的大佬，欢迎一起开发、交流。
+
+
+
+## 更新日志
+
+可以查看[updateLog](./updateLog.md)
 
 
 
@@ -20,8 +28,8 @@
   ├── checks										  // lint规则代码<br>
   ├── custom_lint_config.json			// 规则配置文件<br>
   ├── lintlibrary									// 空项目，依赖了checks用来生成aar包<br>
-  ├── lintincrement							 // 实现lint增量扫描注入的代码<br>
-  ├── lintplugin									// lint插件，用来增量扫描、执行脚本、简化配置、日志输出<br>
+  ├── lintpatch							         // 实现lint增量扫描、修复lint26.5.3bug的补丁代码<br>
+  ├── lintplugin									// lint插件，用来增量扫描、执行脚本、简化配置、日志输出等<br>
 
 
 
@@ -70,7 +78,7 @@ apply plugin: "com.rocketzly.lintPlugin"
 
 - baseline：执行lintIncrement必须参数，用来设置基线代码分支或者commit节点
 - revision：执行lintIncrement必须参数，用来设置最新分支或者commit节点
-- scriptPath：可选参数，在lint发现错误的时候自动执行脚本路径，目前只支持执行python3脚本
+- scriptPath：可选参数，在lint发现错误的时候自动执行脚本路径，目前只支持执行python3和shell脚本
 
 脚本入参：
 
@@ -79,7 +87,7 @@ apply plugin: "com.rocketzly.lintPlugin"
 - moduleName：模块名字
 - errorCount：错误数
 
-具体参数获方法取可以参照项目中[lintNotification.py](./lintNotification.py)脚本
+具体参数获取方法可以参照项目根目录中lintScriptDemo脚本
 
 **顺带提一句增量扫描是通过`git diff $baseline $revision --name-only --diff-filter=ACMRTUXB `去找到变更文件的，所以只要是git命令支持的都可以作为baseline和revision的入参。**
 
@@ -196,6 +204,16 @@ message会影响到AS实时提示展示的信息和report中展示信息。
 severity则是对应AS实时提示的错误等级和report中错误等级。
 
 具体demo可以看项目根目录下[custom_lint_config.json](./custom_lint_config.json)。
+
+
+
+## 关于
+
+对Lint感兴趣的小伙伴可以加我微信交流，微信号：RocketZly。
+
+另外我也创建了一个Lint交流群，欢迎加入。
+
+![](http://rocketzly.androider.top/lint_group1.jpg)
 
 
 
