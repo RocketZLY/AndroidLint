@@ -4,7 +4,6 @@ import com.android.build.gradle.internal.scope.VariantScope
 import com.android.tools.lint.gradle.api.ReflectiveLintRunner
 import com.rocketzly.lintplugin.dependency.DependencyHelper
 import org.gradle.api.Project
-import org.gradle.api.Task
 import sun.misc.URLClassPath
 import java.net.URL
 import kotlin.concurrent.thread
@@ -22,9 +21,6 @@ class LintCreationAction {
         const val TASK_NAME_LINT_INCREMENT = "lintIncrement"
         const val PARAM_NAME_BASELINE = "baseline"
         const val PARAM_NAME_REVISION = "revision"
-
-        fun checkTaskIsIncrementOrFullLint(task: Task) =
-            (task.name == TASK_NAME_LINT_INCREMENT || task.name == TASK_NAME_LINT_FULL)
     }
 
     open class Action(
@@ -40,18 +36,13 @@ class LintCreationAction {
             //修改lintOptions，需要在super#configure之后调用
             LintOptionsInjector.inject(project, task.lintOptions)
 
-            project.gradle.taskGraph.apply {
-                beforeTask {
-                    if (!checkTaskIsIncrementOrFullLint(it)) return@beforeTask
-                    resetLintClassLoader()
-                    ensurePatchSuccess()
-                }
-                afterTask {
-                    if (!checkTaskIsIncrementOrFullLint(it)) return@afterTask
-                    resetLintClassLoader()
-                }
+            task.doFirst {
+                resetLintClassLoader()
+                ensurePatchSuccess()
             }
-
+            task.doLast {
+                resetLintClassLoader()
+            }
         }
 
         private fun resetLintClassLoader() {

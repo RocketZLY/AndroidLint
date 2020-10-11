@@ -1,13 +1,14 @@
 package com.rocketzly.lintplugin.log
 
-import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
+import com.android.build.gradle.BaseExtension
 import com.rocketzly.lintplugin.LintException
 import com.rocketzly.lintplugin.LintHelper
 import com.rocketzly.lintplugin.executor.ScriptExecutor
 import com.rocketzly.lintplugin.task.LintCreationAction
-import com.rocketzly.lintplugin.task.LintCreationAction.Companion.PARAM_NAME_REVISION
 import com.rocketzly.lintplugin.task.LintCreationAction.Companion.PARAM_NAME_BASELINE
+import com.rocketzly.lintplugin.task.LintCreationAction.Companion.PARAM_NAME_REVISION
 import com.rocketzly.lintplugin.task.LintOptionsInjector.Companion.XML_OUTPUT_RELATIVE_PATH
+import com.rocketzly.lintplugin.utils.LintUtils
 import org.gradle.api.Project
 import java.io.File
 import javax.xml.parsers.DocumentBuilderFactory
@@ -26,8 +27,7 @@ class LogHelper : LintHelper {
         var startTime = 0L
         project.gradle.taskGraph.whenReady {
             it.allTasks.find {
-                if (it.name == LintCreationAction.TASK_NAME_LINT_FULL ||
-                    it.name == LintCreationAction.TASK_NAME_LINT_INCREMENT
+                if (LintUtils.checkTaskIsIncrementOrFullLint(it, project)
                 ) {
                     return@find true
                 }
@@ -52,7 +52,7 @@ class LogHelper : LintHelper {
                         println("配置文件加载成功 Path：${configFile.absolutePath}")
                     }
                     println("本次扫描的issue id如下：")
-                    println((project.extensions.getByName("android") as? BaseAppModuleExtension)!!.lintOptions.check)
+                    println((project.extensions.getByName("android") as? BaseExtension)?.lintOptions?.check)
                     printSplitLine("lint配置信息")
                 }
                 doLast {
