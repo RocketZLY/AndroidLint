@@ -6,6 +6,7 @@ dependencies {
     compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     compileOnly "com.android.tools.lint:lint-gradle:$lint_version"
     compileOnly gradleApi()
+    compileOnly "com.android.tools.build:gradle:$agp_version"
 }
 
 sourceCompatibility = "1.7"

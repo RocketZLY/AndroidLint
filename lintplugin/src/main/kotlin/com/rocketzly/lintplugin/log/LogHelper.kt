@@ -47,10 +47,12 @@ class LogHelper : LintHelper {
                     printSplitLine("lint配置信息")
                     val configFile = File(project.rootDir, CONFIG_RELATIVE_PATH)
                     if (!configFile.exists() || !configFile.isFile) {
-                        println("配置文件未找到 Path：${configFile.absolutePath}")
+                        println("配置文件未找到 Path：")
                     } else {
-                        println("配置文件加载成功 Path：${configFile.absolutePath}")
+                        println("配置文件加载成功 Path：")
                     }
+                    println(configFile.absolutePath)
+                    println()
                     println("本次扫描的issue id如下：")
                     println((project.extensions.getByName("android") as? BaseExtension)?.lintOptions?.check)
                     printSplitLine("lint配置信息")
@@ -81,12 +83,15 @@ class LogHelper : LintHelper {
                             println("lint检查通过，未发现错误")
                         } else {
                             println("lint检查未通过，发现${errorCount}个错误")
+                            println()
                             println("包括如下几类错误：")
                             summary.forEach {
                                 println(it)
                             }
                         }
-                        println("耗时：${System.currentTimeMillis() - startTime}ms")
+                        println()
+                        println("耗时：")
+                        println("${System.currentTimeMillis() - startTime}ms")
                         printSplitLine("lint结果信息")
                     } catch (e: Exception) {
                         e.printStackTrace()

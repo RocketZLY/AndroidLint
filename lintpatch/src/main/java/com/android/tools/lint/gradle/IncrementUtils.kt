@@ -1,5 +1,6 @@
 package com.android.tools.lint.gradle
 
+import com.android.build.gradle.BaseExtension
 import com.android.tools.lint.client.api.LintRequest
 import org.gradle.api.Project
 import java.io.File
@@ -27,22 +28,37 @@ class IncrementUtils {
             printSplitLine(TAG)
             var revision = project.properties["revision"]
             var baseline = project.properties["baseline"]
-
             val command =
                 "git diff $baseline $revision --name-only --diff-filter=ACMRTUXB"
             println("开始执行：")
             println(command)
+
+
             val byteArray = Runtime.getRuntime()
                 .exec(command)
                 .inputStream
                 .readBytes()
             val diffFileStr = String(byteArray, Charsets.UTF_8)
             val diffFileList = diffFileStr.split("\n")
-
+            println()
             println("diff结果：")
             println(diffFileStr.removeSuffix("\n"))
+
+            val pkgPath =
+                project.extensions.getByType(BaseExtension::class.java).defaultConfig.applicationId.replace(
+                    ".",
+                    "/"
+                )
+            val filterFileList = diffFileList.filter { it.contains(pkgPath) }//只扫包名下文件
+            println()
+            println("当前Module为${project.name}，过滤掉其他Module和非类文件真正执行lint扫描的文件如下：")
+            filterFileList.forEach {
+                println(it)
+            }
+
+
             lintRequest.getProjects()?.forEach { p ->
-                diffFileList.forEach {
+                filterFileList.forEach {
                     p.addFile(File(it))
                 }
             }
