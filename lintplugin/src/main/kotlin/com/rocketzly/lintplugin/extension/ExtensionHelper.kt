@@ -11,6 +11,10 @@ class ExtensionHelper : LintHelper {
 
     companion object {
         const val EXTENSION_LINT_CONFIG = "lintConfig"
+
+        fun getConfigExtension(project: Project): LintConfigExtension {
+            return (project.extensions.getByName(EXTENSION_LINT_CONFIG) as LintConfigExtension)
+        }
     }
 
     override fun apply(project: Project) {

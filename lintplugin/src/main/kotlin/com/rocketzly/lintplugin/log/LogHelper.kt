@@ -52,9 +52,16 @@ class LogHelper : LintHelper {
                         println("配置文件加载成功 Path：")
                     }
                     println(configFile.absolutePath)
+
+                    val checkList =
+                        (project.extensions.getByName("android") as? BaseExtension)?.lintOptions?.check
                     println()
-                    println("本次扫描的issue id如下：")
-                    println((project.extensions.getByName("android") as? BaseExtension)?.lintOptions?.check)
+                    if (checkList.isNullOrEmpty()) {
+                        println("本次为全issue扫描（即google自带的issue+自定义issue）")
+                    } else {
+                        println("本次只扫描自定义issue，id如下：")
+                        println(checkList)
+                    }
                     printSplitLine("lint配置信息")
                 }
                 doLast {
