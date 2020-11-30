@@ -4,9 +4,9 @@ apply plugin: 'kotlin'
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    compileOnly "com.android.tools.lint:lint-gradle:$lint_version"
+    compileOnly "com.android.tools.lint:lint-gradle:${versions.lint_version}"
     compileOnly gradleApi()
-    compileOnly "com.android.tools.build:gradle:$agp_version"
+    compileOnly "com.android.tools.build:gradle:${versions.agp_version}"
 }
 
 sourceCompatibility = "1.7"

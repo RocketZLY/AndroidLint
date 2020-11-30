@@ -6,9 +6,9 @@ plugins {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    compileOnly "com.android.tools.build:gradle:$agp_version"
-    compileOnly "com.android.tools.lint:lint-gradle:$lint_version"
-    compileOnly "com.android.tools.lint:lint-api:$lint_version"
+    compileOnly "com.android.tools.build:gradle:${versions.agp_version}"
+    compileOnly "com.android.tools.lint:lint-gradle:${versions.lint_version}"
+    compileOnly "com.android.tools.lint:lint-api:${versions.lint_version}"
 }
 
 sourceCompatibility = "1.7"
