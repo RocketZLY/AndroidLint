@@ -1,6 +1,5 @@
 package com.android.tools.lint.gradle
 
-import com.android.build.gradle.BaseExtension
 import com.android.tools.lint.client.api.LintRequest
 import org.gradle.api.Project
 import java.io.File
@@ -33,7 +32,6 @@ class IncrementUtils {
             println("开始执行：")
             println(command)
 
-
             val byteArray = Runtime.getRuntime()
                 .exec(command)
                 .inputStream
@@ -44,18 +42,12 @@ class IncrementUtils {
             println("diff结果：")
             println(diffFileStr.removeSuffix("\n"))
 
-            val pkgPath =
-                project.extensions.getByType(BaseExtension::class.java).defaultConfig.applicationId.replace(
-                    ".",
-                    "/"
-                )
-            val filterFileList = diffFileList.filter { it.contains(pkgPath) }//只扫包名下文件
+            val filterFileList = filterOtherModuleFile(diffFileList, project)
             println()
-            println("当前Module为${project.name}，过滤掉其他Module和非类文件真正执行lint扫描的文件如下：")
+            println("当前Module为${project.name}，过滤掉其他Module文件真正进行lint扫描的文件如下：")
             filterFileList.forEach {
                 println(it)
             }
-
 
             lintRequest.getProjects()?.forEach { p ->
                 filterFileList.forEach {
@@ -63,6 +55,17 @@ class IncrementUtils {
                 }
             }
             printSplitLine(TAG)
+        }
+
+        /**
+         * 过滤其他module的文件，只扫当前module的
+         */
+        private fun filterOtherModuleFile(
+            originList: List<String>,
+            project: Project
+        ): List<String> {
+            val name = project.name
+            return originList.filter { it.startsWith(name) }
         }
     }
 }
