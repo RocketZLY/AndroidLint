@@ -47,12 +47,21 @@ class LogHelper : LintHelper {
                     printSplitLine("lint配置信息")
                     val configFile = File(project.rootDir, CONFIG_RELATIVE_PATH)
                     if (!configFile.exists() || !configFile.isFile) {
-                        println("配置文件未找到 Path：${configFile.absolutePath}")
+                        println("配置文件未找到 Path：")
                     } else {
-                        println("配置文件加载成功 Path：${configFile.absolutePath}")
+                        println("配置文件加载成功 Path：")
                     }
-                    println("本次扫描的issue id如下：")
-                    println((project.extensions.getByName("android") as? BaseExtension)?.lintOptions?.check)
+                    println(configFile.absolutePath)
+
+                    val checkList =
+                        (project.extensions.getByName("android") as? BaseExtension)?.lintOptions?.check
+                    println()
+                    if (checkList.isNullOrEmpty()) {
+                        println("本次为全issue扫描（即google自带的issue+自定义issue）")
+                    } else {
+                        println("本次只扫描自定义issue，id如下：")
+                        println(checkList)
+                    }
                     printSplitLine("lint配置信息")
                 }
                 doLast {
@@ -81,12 +90,15 @@ class LogHelper : LintHelper {
                             println("lint检查通过，未发现错误")
                         } else {
                             println("lint检查未通过，发现${errorCount}个错误")
+                            println()
                             println("包括如下几类错误：")
                             summary.forEach {
                                 println(it)
                             }
                         }
-                        println("耗时：${System.currentTimeMillis() - startTime}ms")
+                        println()
+                        println("耗时：")
+                        println("${System.currentTimeMillis() - startTime}ms")
                         printSplitLine("lint结果信息")
                     } catch (e: Exception) {
                         e.printStackTrace()

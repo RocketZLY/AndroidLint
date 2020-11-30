@@ -5,4 +5,5 @@ package com.rocketzly.lintplugin.extension
  */
 open class LintConfigExtension {
     var baseline = false
+    var onlyCheckCustomIssue = true//只扫自定义规则
 }
