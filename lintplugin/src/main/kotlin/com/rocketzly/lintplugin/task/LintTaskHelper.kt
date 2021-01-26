@@ -1,7 +1,7 @@
 package com.rocketzly.lintplugin.task
 
-import com.android.build.gradle.AppPlugin
-import com.android.build.gradle.LibraryPlugin
+import com.android.build.gradle.internal.plugins.AppPlugin
+import com.android.build.gradle.internal.plugins.LibraryPlugin
 import com.android.build.gradle.internal.VariantManager
 import com.android.build.gradle.internal.scope.VariantScope
 import com.android.build.gradle.internal.tasks.factory.TaskFactoryImpl
