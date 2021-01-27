@@ -1,10 +1,13 @@
 package com.rocketzly.lintplugin.task
 
 import com.android.build.gradle.internal.scope.VariantScope
+import com.android.tools.lint.gradle.api.DelegatingClassLoader
 import com.android.tools.lint.gradle.api.ReflectiveLintRunner
 import com.rocketzly.lintplugin.dependency.DependencyHelper
+import com.rocketzly.lintplugin.utils.ReflectionUtils
 import org.gradle.api.Project
 import sun.misc.URLClassPath
+import java.lang.reflect.Field
 import java.net.URL
 import kotlin.concurrent.thread
 
@@ -15,6 +18,8 @@ import kotlin.concurrent.thread
  * 创建LintTaskAction
  */
 class LintCreationAction {
+
+
 
     companion object {
         const val TASK_NAME_LINT_FULL = "lintFull"
@@ -45,13 +50,16 @@ class LintCreationAction {
             }
         }
 
+        var loader: DelegatingClassLoader? = null
+
+
         private fun resetLintClassLoader() {
             //lint类都是通过该classloader加载，而loader是静态变量，只会创建一次，
             //又由于increment和full需要插入类到该classloader头部实现部分功能
             //ps：increment和full需patch修复lint的bug，increment还额外需要增加增量扫描功能
             //所以在increment和full执行前将classloader置为null，使其重新加载将类插入
             //在increment和full执行后将classloader置为null，避免插入类对其他lintTask造成的影响
-            ReflectiveLintRunner.loader = null
+            loader = null
         }
 
         /**
@@ -61,13 +69,14 @@ class LintCreationAction {
         private fun ensurePatchSuccess() {
             thread {
                 while (true) {
-                    if (ReflectiveLintRunner.loader != null) {
-                        val urlClassPath = ReflectiveLintRunner.loader!!::class.java
+                    loader =  ReflectionUtils.getFieldValue(ReflectiveLintRunner,"loader")  as DelegatingClassLoader?
+                    if (loader!= null) {
+                        val urlClassPath = loader!!::class.java
                             .superclass
                             .getDeclaredField("ucp")
                             .run {
                                 isAccessible = true
-                                get(ReflectiveLintRunner.loader) as URLClassPath
+                                get(loader) as URLClassPath
                             }
 
                         val path = urlClassPath::class.java
