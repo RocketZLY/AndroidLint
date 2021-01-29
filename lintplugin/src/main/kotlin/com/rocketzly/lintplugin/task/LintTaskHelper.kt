@@ -1,12 +1,9 @@
 package com.rocketzly.lintplugin.task
 
-import com.android.build.gradle.internal.plugins.AppPlugin
-import com.android.build.gradle.internal.plugins.LibraryPlugin
-import com.android.build.gradle.internal.VariantManager
 import com.android.build.gradle.internal.scope.VariantScope
 import com.android.build.gradle.internal.tasks.factory.TaskFactoryImpl
 import com.rocketzly.lintplugin.LintHelper
-import com.rocketzly.lintplugin.utils.ReflectionUtils
+import com.rocketzly.lintplugin.utils.LintUtils
 import org.gradle.api.Project
 import java.util.stream.Collectors
 
@@ -20,15 +17,7 @@ class LintTaskHelper : LintHelper {
 
     override fun apply(project: Project) {
         project.afterEvaluate {
-            var variantManager: VariantManager? = null
-            val variantManagerStr = "variantManager"
-            if (project.plugins.hasPlugin(AppPlugin::class.java)) {
-                variantManager = ReflectionUtils.getFieldValue(project.plugins.getPlugin(AppPlugin::class.java), variantManagerStr) as VariantManager?
-            } else if (project.plugins.hasPlugin(LibraryPlugin::class.java)) {
-                variantManager = ReflectionUtils.getFieldValue(project.plugins.getPlugin(LibraryPlugin::class.java), variantManagerStr) as VariantManager?
-            }
-            if (variantManager == null) return@afterEvaluate
-
+            var variantManager = LintUtils.getVariantManager(project) ?: return@afterEvaluate
             val variantScopes = variantManager.variantScopes.stream()
                 .filter { variantScope: VariantScope ->
                     isLintVariant(

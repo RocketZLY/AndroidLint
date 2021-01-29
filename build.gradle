@@ -1,14 +1,14 @@
 buildscript {
-   apply from: 'dependencies.gradle'
-   repositories {
+    apply from: 'dependencies.gradle'
+    repositories {
+        google()
         maven {
             url uri("./repo")
         }
-        google()
         jcenter()
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:${versions.agp_version}"
+        classpath "com.android.tools.build:gradle:$agp_version"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'com.novoda:bintray-release:0.9.2'
         classpath 'com.rocketzly:lintPlugin:0.0.7'

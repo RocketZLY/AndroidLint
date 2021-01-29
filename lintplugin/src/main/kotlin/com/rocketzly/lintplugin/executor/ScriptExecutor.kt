@@ -64,7 +64,7 @@ class ScriptExecutor {
         }
 
         private fun getExecutor(scriptPath: String): Executor? {
-            var scriptType = ""
+            var scriptType: String
             try {
                 scriptType = scriptPath.split(".")[1]
             } catch (e: Exception) {
