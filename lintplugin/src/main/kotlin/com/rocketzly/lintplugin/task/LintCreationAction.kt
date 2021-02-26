@@ -7,7 +7,6 @@ import com.rocketzly.lintplugin.dependency.DependencyHelper
 import com.rocketzly.lintplugin.utils.ReflectionUtils
 import org.gradle.api.Project
 import sun.misc.URLClassPath
-import java.lang.reflect.Field
 import java.net.URL
 import kotlin.concurrent.thread
 
@@ -18,7 +17,6 @@ import kotlin.concurrent.thread
  * 创建LintTaskAction
  */
 class LintCreationAction {
-
 
 
     companion object {
@@ -50,16 +48,15 @@ class LintCreationAction {
             }
         }
 
-        var loader: DelegatingClassLoader? = null
-
 
         private fun resetLintClassLoader() {
-            //lint类都是通过该classloader加载，而loader是静态变量，只会创建一次，
+            //lint类都是通过该classloader加载，而loader是静态变量，只会创建一次(debug的时候每次都是重新创建，直接运行的时候不会重新创建)，
             //又由于increment和full需要插入类到该classloader头部实现部分功能
-            //ps：increment和full需patch修复lint的bug，increment还额外需要增加增量扫描功能
-            //所以在increment和full执行前将classloader置为null，使其重新加载将类插入
-            //在increment和full执行后将classloader置为null，避免插入类对其他lintTask造成的影响
-            loader = null
+            //功能1：increment和full在lint3.6.0以前需要patch修复lint的bug
+            //功能2：increment还额外需要增加增量扫描功能
+            //所以在increment和full执行前将classloader置为null，使其重新加载，将patch类加载进来
+            //在increment和full执行后将classloader置为null，避免插入类对之后执行的其他lintTask造成的影响
+            ReflectionUtils.setFieldValue(ReflectiveLintRunner::class.java, "loader", null)
         }
 
         /**
@@ -69,22 +66,15 @@ class LintCreationAction {
         private fun ensurePatchSuccess() {
             thread {
                 while (true) {
-                    loader =  ReflectionUtils.getFieldValue(ReflectiveLintRunner,"loader")  as DelegatingClassLoader?
-                    if (loader!= null) {
-                        val urlClassPath = loader!!::class.java
-                            .superclass
-                            .getDeclaredField("ucp")
-                            .run {
-                                isAccessible = true
-                                get(loader) as URLClassPath
-                            }
-
-                        val path = urlClassPath::class.java
-                            .getDeclaredField("path")
-                            .run {
-                                isAccessible = true
-                                get(urlClassPath) as ArrayList<URL>
-                            }
+                    var loader = ReflectionUtils.getFieldValue(
+                        ReflectiveLintRunner::class.java,
+                        "loader"
+                    ) as DelegatingClassLoader?
+                    if (loader != null) {
+                        val urlClassPath =
+                            ReflectionUtils.getFieldValue(loader, "ucp") as URLClassPath
+                        val path =
+                            ReflectionUtils.getFieldValue(urlClassPath, "path") as ArrayList<URL>
                         var index = -1
                         path.forEachIndexed { i, url ->
                             if (url.path.contains("lintPatch")) {

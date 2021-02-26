@@ -1,6 +1,6 @@
 package com.rocketzly.lintplugin.executor
 
-import com.rocketzly.lintplugin.log.printSplitLine
+import com.rocketzly.lintplugin.analyze.printSplitLine
 import com.rocketzly.lintplugin.task.LintOptionsInjector.Companion.HTML_OUTPUT_RELATIVE_PATH
 import org.gradle.api.Project
 import java.io.File

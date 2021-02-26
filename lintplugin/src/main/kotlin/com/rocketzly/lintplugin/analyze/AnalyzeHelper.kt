@@ -1,4 +1,4 @@
-package com.rocketzly.lintplugin.log
+package com.rocketzly.lintplugin.analyze
 
 import com.android.build.gradle.BaseExtension
 import com.rocketzly.lintplugin.LintException
@@ -14,10 +14,10 @@ import java.io.File
 import javax.xml.parsers.DocumentBuilderFactory
 
 /**
- * 添加执行日志
+ * 分析lint入参、执行结果、输出日志etc
  * Created by rocketzly on 2020/8/30.
  */
-class LogHelper : LintHelper {
+class AnalyzeHelper : LintHelper {
 
     companion object {
         const val CONFIG_RELATIVE_PATH = "custom_lint_config.json"
@@ -34,6 +34,7 @@ class LogHelper : LintHelper {
                 return@find false
             }?.apply {
                 doFirst {
+                    //入参分析
                     if (it.name == LintCreationAction.TASK_NAME_LINT_INCREMENT) {
                         if (!project.hasProperty(PARAM_NAME_BASELINE)) {
                             throw LintException("lintIncrement必须要${PARAM_NAME_BASELINE}参数")
@@ -42,7 +43,9 @@ class LogHelper : LintHelper {
                             throw LintException("lintIncrement必须要${PARAM_NAME_REVISION}参数")
                         }
                     }
+                    //入参分析
 
+                    //加日志
                     startTime = System.currentTimeMillis()
                     printSplitLine("lint配置信息")
                     val configFile = File(project.rootDir, CONFIG_RELATIVE_PATH)
@@ -63,8 +66,10 @@ class LogHelper : LintHelper {
                         println(checkList)
                     }
                     printSplitLine("lint配置信息")
+                    //加日志
                 }
                 doLast {
+                    //分析结果&加日志
                     val file = project.file(XML_OUTPUT_RELATIVE_PATH)
                     if (!file.exists() || !file.isFile) {
                         println("未找到${file.absolutePath}文件，无法分析lint结果")
@@ -109,6 +114,7 @@ class LogHelper : LintHelper {
                         ScriptExecutor.exec(project, errorCount, summary)
                         throw  LintException("lint检查发现错误")
                     }
+                    //分析结果&加日志
                 }
             }
         }

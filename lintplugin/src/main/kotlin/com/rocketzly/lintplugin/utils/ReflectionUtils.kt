@@ -1,9 +1,14 @@
 package com.rocketzly.lintplugin.utils
+
 import java.lang.reflect.Field
 
 object ReflectionUtils {
     fun getDeclaredField(obj: Any, fieldName: String): Field? {
-        var clazz: Class<*> = obj.javaClass
+        var clazz = if (obj is Class<*>) {
+            obj
+        } else {
+            obj::class.java
+        }
         while (clazz != Any::class.java) {
             try {
                 return clazz.getDeclaredField(fieldName)
@@ -16,13 +21,12 @@ object ReflectionUtils {
 
     /**
      * 直接读取对象的属性值, 忽略 private/protected 修饰符, 也不经过 getter
-     * @param object : 子类对象
-     * @param fieldName : 父类中的属性名
-     * @return : 父类中的属性值
+     * @param object : 对象实例 or Class
+     * @param fieldName : 属性名
+     * @return : 属性值
      */
     fun getFieldValue(obj: Any, fieldName: String): Any? {
         //根据 对象和属性名通过反射 调用上面的方法获取 Field对象
-
         val field: Field? = getDeclaredField(obj, fieldName)
         field?.isAccessible = true
         try {
@@ -33,5 +37,11 @@ object ReflectionUtils {
             e.printStackTrace()
         }
         return null
+    }
+
+    fun setFieldValue(obj: Any, fieldName: String, value: Any?) {
+        val field: Field? = getDeclaredField(obj, fieldName)
+        field?.isAccessible = true
+        field?.set(obj, value)
     }
 }
