@@ -1,6 +1,7 @@
 package com.rocketzly.lintplugin.extension
 
 import com.rocketzly.lintplugin.LintHelper
+import com.rocketzly.lintplugin.utils.StaticMemberContainer
 import org.gradle.api.Project
 
 /**
@@ -13,7 +14,10 @@ class ExtensionHelper : LintHelper {
         const val EXTENSION_LINT_CONFIG = "lintConfig"
 
         fun getConfigExtension(project: Project): LintConfigExtension {
-            return (project.extensions.getByName(EXTENSION_LINT_CONFIG) as LintConfigExtension)
+
+            return StaticMemberContainer.get(StaticMemberContainer.Key.LINT_CONFIG_EXTENSION) {
+                (project.extensions.getByName(EXTENSION_LINT_CONFIG) as LintConfigExtension)
+            }
         }
     }
 

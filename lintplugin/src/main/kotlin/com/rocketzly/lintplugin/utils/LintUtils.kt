@@ -19,43 +19,55 @@ class LintUtils {
          * 遍历rootProject获取agp版本
          */
         fun getAgpVersion(project: Project): String {
-            val group = "com.android.tools.build"
-            val name = "gradle"
-            var version = ""
+            return StaticMemberContainer.get(StaticMemberContainer.Key.AGP_VERSION) {
+                val group = "com.android.tools.build"
+                val name = "gradle"
+                var version = ""
 
-            for (dependency in project.rootProject.buildscript.configurations.getByName("classpath").dependencies) {
-                if (dependency.group != group || dependency.name != name || dependency.version.isNullOrEmpty()) continue
-                if (version.isEmpty()) version = dependency.version!!//空的直接赋值
+                for (dependency in project.rootProject.buildscript.configurations.getByName("classpath").dependencies) {
+                    if (dependency.group != group || dependency.name != name || dependency.version.isNullOrEmpty()) continue
+                    if (version.isEmpty()) version = dependency.version!!//空的直接赋值
 
-                //如果有多个agp获取最高版本
-                val originSplit = version.split(".")
-                val latestSplit = dependency.version!!.split(".")
-                for (i in 0 until Math.min(originSplit.size, latestSplit.size)) {//比较三位,从最高位开始比较
-                    if (latestSplit[i] == originSplit[i]) continue//相同比较下一位
-                    if (originSplit[i] > latestSplit[i]) {//origin大直接跳出
+                    //如果有多个agp获取最高版本
+                    val originSplit = version.split(".")
+                    val latestSplit = dependency.version!!.split(".")
+                    for (i in 0 until Math.min(originSplit.size, latestSplit.size)) {//比较三位,从最高位开始比较
+                        if (latestSplit[i] == originSplit[i]) continue//相同比较下一位
+                        if (originSplit[i] > latestSplit[i]) {//origin大直接跳出
+                            break
+                        }
+                        //latest大则用latest#version
+                        version = dependency.version!!
                         break
                     }
-                    //latest大则用latest#version
-                    version = dependency.version!!
-                    break
                 }
+                version
             }
-            return version
         }
 
         fun getAppPluginId(project: Project): String {
-            return if (getAgpVersion(project) >= "3.6.0") {
-                "com.android.internal.application"
-            } else {
-                "com.android.application"
+            return StaticMemberContainer.get(StaticMemberContainer.Key.APP_PLUGIN_ID) {
+                when {
+                    getAgpVersion(project) >= "3.6.0" -> {
+                        "com.android.internal.application"
+                    }
+                    else -> {
+                        "com.android.application"
+                    }
+                }
             }
         }
 
         fun getLibraryPluginId(project: Project): String {
-            return if (getAgpVersion(project) >= "3.6.0") {
-                "com.android.internal.library"
-            } else {
-                "com.android.library"
+            return StaticMemberContainer.get(StaticMemberContainer.Key.LIBRARY_PLUGIN_ID) {
+                when {
+                    getAgpVersion(project) >= "3.6.0" -> {
+                        "com.android.internal.library"
+                    }
+                    else -> {
+                        "com.android.library"
+                    }
+                }
             }
         }
 
