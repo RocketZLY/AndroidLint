@@ -15,7 +15,12 @@ import org.gradle.api.Project
  */
 class LintPlugin : Plugin<Project> {
 
+    companion object {
+        lateinit var mProject: Project
+    }
+
     override fun apply(project: Project) {
+        mProject = project
         //每次重置下，确保每次拿到的都是最新值
         StaticMemberContainer.reset()
 

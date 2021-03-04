@@ -22,9 +22,9 @@ import static java.io.File.separator;
 
 import com.android.annotations.NonNull;
 import com.android.annotations.Nullable;
-import com.android.builder.model.AndroidProject;
-import com.android.builder.model.LintOptions;
 import com.android.builder.model.Variant;
+import com.android.ide.common.gradle.model.IdeAndroidProject;
+import com.android.ide.common.gradle.model.IdeLintOptions;
 import com.android.repository.Revision;
 import com.android.tools.lint.LintCliClient;
 import com.android.tools.lint.LintCliFlags;
@@ -52,31 +52,26 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
 import org.gradle.api.GradleException;
 import org.w3c.dom.Document;
 
 public class LintGradleClient extends LintCliClient {
-    /**
-     * Variant to run the client on, if any
-     */
-    @Nullable
-    private final Variant variant;
+    /** Variant to run the client on, if any */
+    @Nullable private final Variant variant;
 
     private final org.gradle.api.Project gradleProject;
     private final String version;
     private File sdkHome;
-    @NonNull
-    private final VariantInputs variantInputs;
+    @NonNull private final VariantInputs variantInputs;
     private String baselineVariantName;
     private final Revision buildToolInfoRevision;
     private final boolean isAndroid;
+    private final KotlinSourceFoldersResolver resolver;
 
     public LintGradleClient(
             @NonNull String version,
@@ -87,6 +82,7 @@ public class LintGradleClient extends LintCliClient {
             @Nullable Variant variant,
             @NonNull VariantInputs variantInputs,
             @Nullable Revision buildToolInfoRevision,
+            @NonNull KotlinSourceFoldersResolver resolver,
             boolean isAndroid,
             String baselineVariantName) {
         super(flags, CLIENT_GRADLE);
@@ -97,8 +93,24 @@ public class LintGradleClient extends LintCliClient {
         this.baselineVariantName = baselineVariantName;
         this.registry = registry;
         this.buildToolInfoRevision = buildToolInfoRevision;
+        this.resolver = resolver;
         this.variant = variant;
         this.isAndroid = isAndroid;
+    }
+
+    public List<File> getKotlinSourceFolders(String projectPath) {
+        if (projectPath == null || variant == null) {
+            return Collections.emptyList();
+        }
+        return resolver.getKotlinSourceFolders(
+                variant.getName(), gradleProject.findProject(projectPath));
+    }
+
+    public List<File> getKotlinSourceFolders(org.gradle.api.Project project) {
+        if (variant == null) {
+            return Collections.emptyList();
+        }
+        return resolver.getKotlinSourceFolders(variant.getName(), project);
     }
 
     @Nullable
@@ -116,15 +128,15 @@ public class LintGradleClient extends LintCliClient {
 
         // Look up local lint configuration for this project, either via Gradle lintOptions
         // or via local lint.xml
-        AndroidProject gradleProjectModel = project.getGradleProjectModel();
+        IdeAndroidProject gradleProjectModel = project.getGradleProjectModel();
         if (gradleProjectModel != null) {
-            LintOptions lintOptions = gradleProjectModel.getLintOptions();
+            IdeLintOptions lintOptions = gradleProjectModel.getLintOptions();
             File lintXml = lintOptions.getLintConfig();
             if (lintXml == null) {
                 lintXml = new File(project.getDir(), DefaultConfiguration.CONFIG_FILE_NAME);
             }
 
-            final Map<String, Integer> overrides = lintOptions.getSeverityOverrides();
+            Map<String, Integer> overrides = lintOptions.getSeverityOverrides();
             if (overrides != null && !overrides.isEmpty()) {
                 return new CliConfiguration(
                         lintXml, getConfiguration(), project, flags.isFatalOnly()) {
@@ -167,8 +179,8 @@ public class LintGradleClient extends LintCliClient {
 
     @NonNull
     @Override
-    public List<File> findRuleJars(@NonNull Project project) {
-        return variantInputs.getRuleJars();
+    public Iterable<File> findRuleJars(@NonNull Project project) {
+        return variantInputs.getRuleJars().getAsFileTree().filter(File::isFile).getFiles();
     }
 
     @NonNull
@@ -236,9 +248,7 @@ public class LintGradleClient extends LintCliClient {
         return driver;
     }
 
-    /**
-     * Whether lint should continue running after a baseline has been created
-     */
+    /** Whether lint should continue running after a baseline has been created */
     public static boolean continueAfterBaseLineCreated() {
         return VALUE_TRUE.equals(System.getProperty("lint.baselines.continue"));
     }
@@ -250,11 +260,11 @@ public class LintGradleClient extends LintCliClient {
     @NonNull
     public Pair<List<Warning>, LintBaseline> run(@NonNull IssueRegistry registry)
             throws IOException {
-        int exitCode = run(registry, Collections.<File>emptyList());
+        int exitCode = run(registry, Collections.emptyList());
 
         if (exitCode == LintCliFlags.ERRNO_CREATED_BASELINE) {
             if (continueAfterBaseLineCreated()) {
-                return Pair.of(Collections.<Warning>emptyList(), driver.getBaseline());
+                return Pair.of(Collections.emptyList(), driver.getBaseline());
             }
             throw new GradleException("Aborting build since new baseline file was created");
         }
@@ -272,12 +282,12 @@ public class LintGradleClient extends LintCliClient {
      * and mark their
      *
      * @param warningMap a map from variant to corresponding warnings
-     * @param project    the project model
+     * @param project the project model
      * @return a merged list of issues
      */
     @NonNull
     public static List<Warning> merge(
-            @NonNull Map<Variant, List<Warning>> warningMap, @NonNull AndroidProject project) {
+            @NonNull Map<Variant, List<Warning>> warningMap, @NonNull IdeAndroidProject project) {
         // Easy merge?
         if (warningMap.size() == 1) {
             return warningMap.values().iterator().next();

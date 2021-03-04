@@ -2,6 +2,7 @@ package com.rocketzly.lintplugin.task
 
 import com.android.build.gradle.internal.scope.VariantScope
 import com.android.build.gradle.tasks.LintBaseTask
+import com.rocketzly.lintplugin.utils.LintUtils
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.FileCollection
 import org.gradle.api.tasks.InputFiles
@@ -57,13 +58,13 @@ open class LintTask : LintBaseTask() {
         override fun configure(task: LintTask) {
             super.configure(task)
             task.apply {
-                variantName = scope.fullVariantName//lint检测时会判断有没有该值，必须有
+                variantName = LintUtils.getFullVariantName(scope)//lint检测时会判断有没有该值，必须有
                 variantInputs = VariantInputs(scope)//lint检测时会取该值，必须有
                 allInputs = scope.globalScope.project.files()
                     .from(this.variantInputs!!.allInputs)//gradle增量任务
 
                 for (variantScope in variantScopes) {//不知道干嘛的，反正是模拟LintPerVariantTask就直接照抄了
-                    addJarArtifactsToInputs(allInputs, variantScope)
+                    LintUtils.addArtifactsToInputs(this, allInputs!!, variantScope)
                 }
                 description = "run lint scanner"
             }

@@ -1,10 +1,14 @@
 package com.rocketzly.lintplugin.utils
 
 import com.android.build.gradle.internal.VariantManager
+import com.android.build.gradle.internal.scope.VariantScope
+import com.android.build.gradle.tasks.LintBaseTask
+import com.rocketzly.lintplugin.LintPlugin
 import com.rocketzly.lintplugin.task.LintCreationAction.Companion.TASK_NAME_LINT_FULL
 import com.rocketzly.lintplugin.task.LintCreationAction.Companion.TASK_NAME_LINT_INCREMENT
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.file.ConfigurableFileCollection
 
 /**
  * Created by rocketzly on 2020/10/11.
@@ -91,6 +95,44 @@ class LintUtils {
                     null
                 }
             }
+        }
+
+        fun getFullVariantName(variantScope: VariantScope): String {
+            val methodName = when {
+                getAgpVersion(LintPlugin.mProject) >= "4.0.0" -> {
+                    "getName"
+                }
+                else -> {
+                    "getFullVariantName"
+                }
+            }
+            return ReflectionUtils.invokeMethod(
+                variantScope,
+                methodName,
+                arrayOf(),
+                arrayOf()
+            ) as String
+        }
+
+        fun addArtifactsToInputs(
+            task: LintBaseTask,
+            inputs: ConfigurableFileCollection,
+            variantScope: VariantScope
+        ) {
+            val methodName = when {
+                getAgpVersion(LintPlugin.mProject) >= "4.0.0" -> {
+                    "addModelArtifactsToInputs"
+                }
+                else -> {
+                    "addJarArtifactsToInputs"
+                }
+            }
+            ReflectionUtils.invokeMethod(
+                task,
+                methodName,
+                arrayOf(ConfigurableFileCollection::class.java, VariantScope::class.java),
+                arrayOf(inputs, variantScope)
+            )
         }
     }
 }
