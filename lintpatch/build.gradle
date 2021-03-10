@@ -29,14 +29,8 @@ task makeJar(type: Copy) {
 
 makeJar.dependsOn(build)
 
-if (upload_lint_patch) {
-    apply plugin: 'com.novoda.bintray-release'
-    publish {
-        userOrg = 'zhuliyuan' //bintray注册的用户名（不是邮箱）
-        groupId = 'com.rocketzly'
-        artifactId = 'lintPatch' //项目名称
-        publishVersion = '0.0.2' //版本号
-        desc = 'a lint patch' //项目描述。可空。
-        website = 'https://github.com/RocketZLY/AndroidLint' //项目地址，一般填github地址。可空。
-    }
+ext {
+    PUBLISH_ARTIFACT_ID = 'lintpatch'
+    PUBLISH_VERSION = '4.0.0'
 }
+apply from: "${rootProject.projectDir}/publish-mavencentral.gradle"
