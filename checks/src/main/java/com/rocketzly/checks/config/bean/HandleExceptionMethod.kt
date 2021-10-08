@@ -7,5 +7,8 @@ package com.rocketzly.checks.config.bean
  * Time: 11:06 AM
  */
 data class HandleExceptionMethod(
+    /**
+     * 需要处理的异常
+     */
     val exception: String = ""
 ) : BaseConfigProperty()
