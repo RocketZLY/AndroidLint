@@ -1,7 +1,8 @@
-package com.rocketzly.checks
+package com.rocketzly.checks.matcher
 
 import com.intellij.psi.PsiClass
 import com.rocketzly.checks.config.bean.BaseConfigProperty
+import com.rocketzly.checks.getQualifiedName
 import org.jetbrains.uast.UCallExpression
 import org.jetbrains.uast.UClass
 import org.jetbrains.uast.getContainingUClass
@@ -103,9 +104,13 @@ class LintMatcher {
 
 
         /**
-         * name是完全匹配，nameRegex是正则匹配，匹配优先级上name > nameRegex
-         * inClassName是当前需要匹配的方法所在类
-         * exclude是要排除匹配的类（目前以类的粒度去排除）
+         * 先排除在匹配，排除优先级是先exclude再excludeRegex，匹配优先级是先name再nameRegex
+         * @param name 是完全匹配
+         * @param nameRegex 是正则匹配
+         * @param qualifiedName 是完整名字
+         * @param inClassName 是所在类的名字
+         * @param exclude 排除精确匹配列表
+         * @param excludeRegex 排除正则表达式
          */
         fun match(
             name: String?,
@@ -132,6 +137,7 @@ class LintMatcher {
             if (name != null && name.isNotEmpty() && name == qualifiedName) {//优先匹配name
                 return true
             }
+
             if (nameRegex != null && nameRegex.isNotEmpty() &&
                 Pattern.compile(nameRegex).matcher(qualifiedName).find()
             ) {//在匹配nameRegex

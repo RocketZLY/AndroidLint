@@ -19,6 +19,5 @@ jar {
         attributes("Lint-Registry-v2": "com.rocketzly.checks.CustomIssueRegistry")
     }
 }
-
 sourceCompatibility = "7"
 targetCompatibility = "7"

@@ -2,9 +2,10 @@ package com.rocketzly.checks.detector
 
 import com.android.tools.lint.client.api.UElementHandler
 import com.android.tools.lint.detector.api.*
-import com.rocketzly.checks.config.ConfigParser
-import com.rocketzly.checks.config.LintConfig
-import com.rocketzly.checks.LintMatcher
+import com.rocketzly.checks.CUSTOM_CATEGORY
+import com.rocketzly.checks.matcher.LintMatcher
+import com.rocketzly.checks.config.LintConfigProvider
+import com.rocketzly.checks.config.LintParserKey
 import com.rocketzly.checks.report
 import org.jetbrains.uast.UCallExpression
 import org.jetbrains.uast.UClass
@@ -22,12 +23,12 @@ class AvoidUsageApiDetector : BaseDetector(), Detector.UastScanner {
 
     companion object {
         private const val REPORT_MESSAGE =
-            "避免使用${LintConfig.CONFIG_FILE_NAME}中${ConfigParser.KEY_AVOID_USAGE_API}配置的api"
+            "避免使用${LintConfigProvider.CONFIG_FILE_NAME}中${LintParserKey.KEY_AVOID_USAGE_API}配置的api"
         val ISSUE = Issue.create(
             "AvoidUsageApiCheck",
             REPORT_MESSAGE,
             REPORT_MESSAGE,
-            Category.CORRECTNESS,
+            CUSTOM_CATEGORY,
             10,
             Severity.ERROR,
             Implementation(AvoidUsageApiDetector::class.java, Scope.JAVA_FILE_SCOPE)
@@ -56,7 +57,7 @@ class AvoidUsageApiDetector : BaseDetector(), Detector.UastScanner {
     }
 
     private fun checkMethodCall(context: JavaContext, node: UCallExpression) {
-        lintConfig.avoidUsageApi.method.forEach {
+        lintConfigProvider.avoidUsageApi.method.forEach {
             if (LintMatcher.matchMethod(it, node)) {
                 context.report(ISSUE, context.getLocation(node), it)
                 return
@@ -65,7 +66,7 @@ class AvoidUsageApiDetector : BaseDetector(), Detector.UastScanner {
     }
 
     private fun checkConstructorCall(context: JavaContext, node: UCallExpression) {
-        lintConfig.avoidUsageApi.construction.forEach {
+        lintConfigProvider.avoidUsageApi.construction.forEach {
             if (LintMatcher.matchConstruction(it, node)) {
                 context.report(ISSUE, context.getLocation(node), it)
                 return
@@ -75,7 +76,7 @@ class AvoidUsageApiDetector : BaseDetector(), Detector.UastScanner {
     }
 
     private fun checkInheritClass(context: JavaContext, node: UClass) {
-        lintConfig.avoidUsageApi.inherit.forEach { avoidInheritClass ->
+        lintConfigProvider.avoidUsageApi.inherit.forEach { avoidInheritClass ->
             if (LintMatcher.matchInheritClass(
                     avoidInheritClass,
                     node

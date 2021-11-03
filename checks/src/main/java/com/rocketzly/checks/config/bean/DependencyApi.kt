@@ -14,9 +14,21 @@ data class DependencyApi(
      */
     @SerializedName("trigger_method")
     val triggerMethod: String = "",
+
+    /**
+     * 触发方法
+     */
+    @SerializedName("trigger_method_regex")
+    val triggerMethodRegex: String = "",
     /**
      * 依赖方法
      */
     @SerializedName("dependency_method")
-    val dependencyMethod: String = ""
+    val dependencyMethod: String = "",
+
+    /**
+     * 依赖方法
+     */
+    @SerializedName("dependency_method_regex")
+    val dependencyMethodRegex: String = ""
 ) : BaseConfigProperty()

@@ -35,7 +35,6 @@
     "inherit": [
       {
         "name_regex": "\\.(AppCompat|Main)?Activity$",
-        "exclude_regex": "com.rocketzly.androidlint.MainActivity",
         "message": "避免直接继承Activity，建议继承xxxActivity",
         "severity": "warning"
       }
@@ -59,19 +58,14 @@
   ],
   "resource_name": {
     "drawable": {
-      "name_regex": "^(bg|shape)_",
+      "name_regex": "(bg|shape)_",
       "message": "drawable命名不符合 (bg|shape)_ 规则",
       "severity": "warning"
     },
     "layout": {
-      "name_regex": "^(activity|dialog|item|view|page)_",
+      "name_regex": "(activity|dialog|item|view|page)_",
       "message": "layout命名不符合 (activity|dialog|item|view|page)_ 规则",
       "severity": "warning"
     }
-  },
-  "serializable_config": {
-    "name_regex": "^(com\\.rocketzly\\.checks|com\\.rocketzly\\.androidlint)",
-    "message": "该对象必须要实现Serializable接口，因为外部类实现了Serializable接口",
-    "severity": "warning"
   }
 }

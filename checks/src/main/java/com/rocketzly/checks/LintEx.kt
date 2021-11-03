@@ -18,6 +18,9 @@ fun UCallExpression.getQualifiedName(): String {
     return resolve()?.containingClass?.qualifiedName + "." + resolve()?.name
 }
 
+/**
+ * report包装方法，展示具体问题的详细信息
+ */
 fun Context.report(
     issue: Issue,
     location: Location,
@@ -30,7 +33,7 @@ fun Context.report(
             issue.getExplanation(TextFormat.TEXT),
             issue.category,
             issue.priority,
-            baseProperty.lintSeverity,
+            baseProperty.severity,
             issue.implementation
         ),
         location,

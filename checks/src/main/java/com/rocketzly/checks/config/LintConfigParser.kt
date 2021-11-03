@@ -3,7 +3,6 @@ package com.rocketzly.checks.config
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
-import com.rocketzly.checks.config.bean.*
 import java.io.File
 
 /**
@@ -38,7 +37,7 @@ class LintConfigParser(configFile: File) {
     ): List<T> {
         return Gson().fromJson(
             configJson.getAsJsonArray(key),
-            object : TypeToken<List<T>>() {}.type
+            TypeToken.getParameterized(List::class.java, T::class.java).type
         ) ?: defaultValue
     }
 }

@@ -22,8 +22,10 @@ class LintConfigProvider private constructor() {
     private lateinit var parser: LintConfigParser
 
     companion object {
-        private const val IS_DEBUG = false
+        const val IS_DEBUG = true
         const val CONFIG_FILE_NAME = "custom_lint_config.json"
+
+        //测试路径无法从project获得，因此只能写死
         const val DEBUG_PATH = "/Users/liyuan.zhu/Documents/AndroidLint"
 
         private var instance: LintConfigProvider? = null
@@ -36,7 +38,7 @@ class LintConfigProvider private constructor() {
         }
     }
 
-    fun init(context: Context) {
+    private fun init(context: Context) {
         val parent = if (IS_DEBUG) DEBUG_PATH else context.project.dir.absolutePath + "/../"
         val configFile = File(parent, CONFIG_FILE_NAME)
         parser = LintConfigParser(configFile)

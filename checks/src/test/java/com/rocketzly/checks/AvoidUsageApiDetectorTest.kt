@@ -1,72 +1,23 @@
 package com.rocketzly.checks
 
-import com.android.tools.lint.checks.infrastructure.LintDetectorTest
-import com.android.tools.lint.detector.api.Detector
-import com.android.tools.lint.detector.api.Issue
+import com.android.tools.lint.checks.infrastructure.LintDetectorTest.java
+import com.android.tools.lint.checks.infrastructure.LintDetectorTest.kotlin
+import com.android.tools.lint.checks.infrastructure.TestLintTask.lint
 import com.rocketzly.checks.detector.AvoidUsageApiDetector
+import org.junit.Test
 
 /**
  * User: Rocket
  * Date: 2020/6/9
  * Time: 4:53 PM
  */
-class AvoidUsageApiDetectorTest : LintDetectorTest() {
-    override fun getDetector(): Detector {
-        return AvoidUsageApiDetector()
-    }
-
-    override fun getIssues(): MutableList<Issue> {
-        return mutableListOf(AvoidUsageApiDetector.ISSUE)
-    }
+class AvoidUsageApiDetectorTest {
 
     /**
-     * 测试通过名字匹配的方法
+     * 避免使用的方法
      */
-    fun testAvoidUsageMethodByName() {
-        val importActivityClass = java(
-            """
-            package android.content;
-            
-            public class ContextWrapper  {
-                public void getSharedPreferences(String name, int mode) {
-                    
-                }
-            }
-            """.trimIndent()
-        )
-
-        val testClass = kotlin(
-            """
-            package com.rocketzly.androidlint
-            
-            import android.content.ContextWrapper
-            
-            /**
-             * User: Rocket
-             * Date: 2020/6/9
-             * Time: 5:28 PM
-             */
-            class Test {
-                
-                fun test(context: ContextWrapper){
-                    context.getSharedPreferences("123",1)
-                }
-            }
-                """.trimIndent()
-        )
-
-        lint()
-            .files(
-                importActivityClass, testClass
-            )
-            .run()
-            .expect("No warnings.")
-    }
-
-    /**
-     * 测试通过正则匹配的方法
-     */
-    fun testAvoidUsageMethodByNameRegex() {
+    @Test
+    fun avoidUsageMethod() {
         val importLogClass = java(
             """
             package android.util;
@@ -75,8 +26,8 @@ class AvoidUsageApiDetectorTest : LintDetectorTest() {
                     
                 }
             }
-            """.trimIndent()
-        )
+            """
+        ).indented()
 
         val testCode = kotlin(
             """
@@ -94,17 +45,27 @@ class AvoidUsageApiDetectorTest : LintDetectorTest() {
                         Log.i("zhuliyuan", "123")
                     }
                 }
-            """.trimIndent()
-        )
+            """
+        ).indented()
         lint()
             .files(
                 importLogClass, testCode
             )
+            .issues(AvoidUsageApiDetector.ISSUE)
             .run()
-            .expect("No warnings.")
+            .expect(
+                "src/com/rocketzly/androidlint/Test.kt:12: Error: 禁止直接使用android.util.Log，必须使用统一工具类xxxLog [AvoidUsageApiCheck]\n" +
+                        "        Log.i(\"zhuliyuan\", \"123\")\n" +
+                        "        ~~~~~~~~~~~~~~~~~~~~~~~~~\n" +
+                        "1 errors, 0 warnings"
+            )
     }
 
-    fun testAvoidUsageConstruction() {
+    /**
+     * 避免创建的类
+     */
+    @Test
+    fun avoidUsageConstruction() {
         val testClass = java(
             """
             package com.rocketzly.checks;
@@ -126,10 +87,20 @@ class AvoidUsageApiDetectorTest : LintDetectorTest() {
             .files(
                 testClass
             )
+            .issues(AvoidUsageApiDetector.ISSUE)
             .run()
-            .expect("No warnings.")
+            .expect(
+                "src/com/rocketzly/checks/Test.java:10: Error: 禁止直接使用new Thread()创建线程，建议使用xxxUtils做线程操作 [AvoidUsageApiCheck]\n" +
+                        "        new Thread();\n" +
+                        "        ~~~~~~~~~~~~\n" +
+                        "1 errors, 0 warnings"
+            )
     }
 
+    /**
+     * 避免继承的类
+     */
+    @Test
     fun testAvoidInheritClass() {
         val importFile = kotlin(
             """
@@ -156,7 +127,13 @@ class AvoidUsageApiDetectorTest : LintDetectorTest() {
 
         lint()
             .files(importFile, testFile)
+            .issues(AvoidUsageApiDetector.ISSUE)
             .run()
-            .expect("No warnings.")
+            .expect(
+                "src/com/rocketzly/androidlint/MainActivity.kt:5: Warning: 避免直接继承Activity，建议继承xxxActivity [AvoidUsageApiCheck]\n" +
+                        "class MainActivity : AppCompatActivity() {\n" +
+                        "^\n" +
+                        "0 errors, 1 warnings"
+            )
     }
 }
