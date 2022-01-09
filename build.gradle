@@ -1,12 +1,10 @@
 buildscript {
-    apply from: 'dependencies.gradle'
+    apply from: 'versions.gradle'
     repositories {
-        maven {
-            url uri("./repo")
-        }
+        mavenLocal()
         maven { url 'http://maven.aliyun.com/nexus/content/repositories/google' }
         maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
-        maven { url 'http://maven.aliyun.com/nexus/content/repositories/jcenter'}
+        maven { url 'http://maven.aliyun.com/nexus/content/repositories/jcenter' }
         mavenCentral()
         google()
         jcenter()
@@ -14,17 +12,15 @@ buildscript {
     dependencies {
         classpath "com.android.tools.build:gradle:$agp_version"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'com.novoda:bintray-release:0.9.2'
-        classpath 'com.github.rocketzly:lintplugin:0.0.8'
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
+        classpath "com.github.rocketzly:lintplugin:$publish_version"
     }
 }
 
 allprojects {
     repositories {
+        mavenLocal()
         maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
-        maven { url 'http://maven.aliyun.com/nexus/content/repositories/jcenter'}
+        maven { url 'http://maven.aliyun.com/nexus/content/repositories/jcenter' }
         maven { url 'http://maven.aliyun.com/nexus/content/repositories/google' }
         mavenCentral()
         google()
@@ -32,22 +28,22 @@ allprojects {
     }
 }
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
+subprojects { p ->
+    //需要上传项目列表
+    def uploadProjectList = ['lintplugin',
+                             'lintpatch',
+                             'lintlibrary',
+                             'android-gradle-compat',
+                             'android-gradle-v3_6',
+                             'android-gradle-v4_0',
+                             'android-gradle-v4_1']
+    if (!uploadProjectList.contains(p.name)) return
+    //添加上传脚本
+    afterEvaluate {
+        p.apply from: "${rootProject.rootDir.absolutePath}/publish-mavencentral.gradle"
+    }
 }
 
-subprojects {
-    afterEvaluate { p ->
-        if (plugins.hasPlugin("com.android.application") ||
-                plugins.hasPlugin("com.android.library")) {
-            tasks.getByName('lint').doFirst {
-                def expect = ['clean', 'build', 'bintrayUpload']
-                def res = gradle.startParameter.taskNames
-                if (res == expect) {
-                    println "执行task为上传Jcenter:${expect},动态修改lintOptions.abortOnError为false"
-                    p.android.lintOptions.abortOnError = false
-                }
-            }
-        }
-    }
+task clean(type: Delete) {
+    delete rootProject.buildDir
 }

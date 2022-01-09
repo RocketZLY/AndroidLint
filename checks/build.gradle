@@ -3,7 +3,7 @@ apply plugin: 'kotlin'
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     compileOnly "com.android.tools.lint:lint-api:$lint_version"
     compileOnly "com.android.tools.lint:lint-checks:$lint_version"
     testImplementation "junit:junit:4.12"
@@ -19,5 +19,7 @@ jar {
         attributes("Lint-Registry-v2": "com.rocketzly.checks.CustomIssueRegistry")
     }
 }
-sourceCompatibility = "7"
-targetCompatibility = "7"
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}

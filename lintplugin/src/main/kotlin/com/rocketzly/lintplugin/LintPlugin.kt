@@ -1,8 +1,6 @@
 package com.rocketzly.lintplugin
 
 import com.rocketzly.lintplugin.dependency.DependencyHelper
-import com.rocketzly.lintplugin.extension.ExtensionHelper
-import com.rocketzly.lintplugin.analyze.AnalyzeHelper
 import com.rocketzly.lintplugin.task.LintTaskHelper
 import com.rocketzly.lintplugin.utils.StaticMemberContainer
 import org.gradle.api.Plugin
@@ -25,8 +23,8 @@ class LintPlugin : Plugin<Project> {
         StaticMemberContainer.reset()
 
         DependencyHelper().apply(project)
-        ExtensionHelper().apply(project)
-        AnalyzeHelper().apply(project)
+//        ExtensionHelper().apply(project)
+//        AnalyzeHelper().apply(project)
         LintTaskHelper().apply(project)
     }
 }

@@ -3,34 +3,13 @@ apply plugin: 'kotlin'
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     compileOnly "com.android.tools.lint:lint-gradle:$lint_version"
     compileOnly gradleApi()
     compileOnly "com.android.tools.build:gradle:$agp_version"
 }
 
-sourceCompatibility = "1.8"
-targetCompatibility = "1.8"
-
-def date = new Date().format("MMdd-HH-mm-ss")
-def originName = "${name}.jar"
-def newName = "${name}-${date}.jar"
-
-task makeJar(type: Copy) {
-    doFirst {
-        delete('build/export/')
-    }
-    from('build/libs') {
-        include originName
-    }
-    into('build/export')
-    rename(originName, newName)
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
-
-makeJar.dependsOn(build)
-
-ext {
-    PUBLISH_ARTIFACT_ID = 'lintpatch'
-    PUBLISH_VERSION = '4.0.0'
-}
-apply from: "${rootProject.projectDir}/publish-mavencentral.gradle"

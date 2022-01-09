@@ -2,15 +2,17 @@ apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
 def PUBLISH_GROUP_ID = "com.github.rocketzly"
+def PUBLISH_ARTIFACT_ID = project.name
+def PUBLISH_VERSION = publish_version
 def IS_ANDROID_MODULE = project.plugins.hasPlugin("com.android.library") ||
         project.plugins.hasPlugin("com.android.application")
 //---------------------------附带源码信息------------------------------
-task androidSourcesJar(type: Jar) {
+task sourcesJar(type: Jar) {
     archiveClassifier.set('sources')
     if (IS_ANDROID_MODULE) {
         // For Android libraries
         from android.sourceSets.main.java.srcDirs
-        from android.sourceSets.main.kotlin.srcDirs
+//        from android.sourceSets.main.kotlin.srcDirs
     } else {
         // For pure Kotlin libraries, in case you have them
         from sourceSets.main.java.srcDirs
@@ -18,9 +20,7 @@ task androidSourcesJar(type: Jar) {
     }
 }
 //---------------------------附带源码信息------------------------------
-group = PUBLISH_GROUP_ID
-version = PUBLISH_VERSION
-
+//---------------------------上传秘钥------------------------------
 ext["signing.keyId"] = ''
 ext["signing.password"] = ''
 ext["signing.secretKeyRingFile"] = ''
@@ -45,6 +45,7 @@ if (secretPropsFile.exists()) {
     ext["ossrhPassword"] = System.getenv('OSSRH_PASSWORD')
     ext["sonatypeStagingProfileId"] = System.getenv('SONATYPE_STAGING_PROFILE_ID')
 }
+//---------------------------上传秘钥------------------------------
 
 publishing {
     publications {
@@ -57,12 +58,13 @@ publishing {
 
             // Two artifacts, the `aar` (or `jar`) and the sources
             if (IS_ANDROID_MODULE) {
-//                artifact("$buildDir/outputs/aar/${project.getName()}-release.aar")
-                from components.release
+                afterEvaluate {
+                    from components.release
+                }
             } else {
-                artifact jar
+                from components.kotlin
             }
-            artifact androidSourcesJar
+            artifact sourcesJar
 
             // Mostly self-explanatory metadata
             pom {
@@ -94,12 +96,6 @@ publishing {
                 username ossrhUsername
                 password ossrhPassword
             }
-        }
-        maven {
-            // This is an arbitrary name, you may also use "mavencentral" or
-            // any other name that's descriptive for you
-            name = "local"
-            url = "../repo"
         }
     }
 }

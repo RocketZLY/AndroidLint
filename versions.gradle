@@ -1,0 +1,8 @@
+ext {
+    agp_version = "4.1.0"
+    //lint版本为agp版本x.y.z大版本+23,即x+23.y.z
+    lint_version = agp_version.split("[.]")[0].toInteger() + 23 + agp_version.substring(1)
+    kotlin_version = '1.5.30'
+    //发布版本，所有对外发布模块公用一个版本
+    publish_version = "1.0.0"
+}

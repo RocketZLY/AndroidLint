@@ -25,7 +25,7 @@ class LintConfigProvider private constructor() {
         const val IS_DEBUG = true
         const val CONFIG_FILE_NAME = "custom_lint_config.json"
 
-        //测试路径无法从project获得，因此只能写死
+        //测试路径无法从project获得，单元测试的project是临时目录，因此只能写死
         const val DEBUG_PATH = "/Users/liyuan.zhu/Documents/AndroidLint"
 
         private var instance: LintConfigProvider? = null
