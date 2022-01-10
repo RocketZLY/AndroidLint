@@ -14,5 +14,7 @@ import com.rocketzly.gradle.IAgpApiProvider
 class AgpApiProviderV36 : IAgpApiProvider {
     override val compatRevision: Revision = Revision(3, 6, 0)
 
-    override fun getAgpApi(): IAgpApi = AgpApiV36
+    override val agpApi: IAgpApi by lazy {
+        AgpApiV36()
+    }
 }

@@ -39,7 +39,7 @@ object AgpApiFactory {
      * 获取agp对应版本的apiProvider
      */
     fun getAgpApi(): IAgpApi {
-        return provider.getAgpApi()
+        return provider.agpApi
     }
 
 }

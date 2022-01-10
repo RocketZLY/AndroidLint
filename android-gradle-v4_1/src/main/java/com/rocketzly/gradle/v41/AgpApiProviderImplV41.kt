@@ -12,9 +12,9 @@ import com.rocketzly.gradle.IAgpApiProvider
  */
 @AutoService(IAgpApiProvider::class)
 class AgpApiProviderImplV41 : IAgpApiProvider {
-
     override val compatRevision: Revision = Revision(4, 1, 0)
 
-    override fun getAgpApi(): IAgpApi = AgpApiV41
-
+    override val agpApi: IAgpApi by lazy {
+        AgpApiV41()
+    }
 }

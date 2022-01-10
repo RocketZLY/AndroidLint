@@ -8,6 +8,6 @@ import android.graphics.Color
 class HandleExceptionMethod {
 
     fun test() {
-        Color.parseColor("")
+        Color.parseColor("1")
     }
 }

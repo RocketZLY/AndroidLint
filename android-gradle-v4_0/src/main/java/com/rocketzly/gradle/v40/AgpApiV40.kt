@@ -17,7 +17,7 @@ import org.gradle.api.Task
  * Date: 2022/1/9
  * Time: 7:22 下午
  */
-object AgpApiV40 : IAgpApi() {
+class AgpApiV40 : IAgpApi() {
 
     override fun createLintTasks(
         project: Project,

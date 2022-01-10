@@ -18,5 +18,5 @@ interface IAgpApiProvider {
     /**
      * 获取apgApi实例
      */
-    fun getAgpApi(): IAgpApi
+    val agpApi: IAgpApi
 }
