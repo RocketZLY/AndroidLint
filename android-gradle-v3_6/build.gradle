@@ -16,4 +16,6 @@ dependencies {
     implementation project(':android-gradle-compat')
     compileOnly gradleApi()
     compileOnly 'com.android.tools.build:gradle:3.6.0'
+    compileOnly "com.android.tools.lint:lint-gradle:26.6.0"
+    compileOnly "com.android.tools.lint:lint-api:26.6.0"
 }

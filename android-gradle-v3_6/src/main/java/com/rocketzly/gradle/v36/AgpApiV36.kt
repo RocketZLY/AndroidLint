@@ -17,7 +17,7 @@ import org.gradle.api.Task
  * Date: 2022/1/9
  * Time: 7:18 下午
  */
-class AgpApiV36 : IAgpApi() {
+class AgpApiV36 : IAgpApi {
 
     override fun createLintTasks(
         project: Project,
@@ -45,4 +45,14 @@ class AgpApiV36 : IAgpApi() {
         val variantType = variantScope.variantConfiguration.type
         return !variantType.isForTesting && !variantType.isHybrid
     }
+
+    override fun injectPatch(project: Project, version: String) {
+    }
+
+    override fun replaceLintClassLoader(task: Task) {
+    }
+
+    override fun resetLintClassLoader() {
+    }
+
 }

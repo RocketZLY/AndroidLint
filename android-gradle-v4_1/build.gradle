@@ -16,4 +16,6 @@ dependencies {
     implementation project(':android-gradle-compat')
     compileOnly gradleApi()
     compileOnly 'com.android.tools.build:gradle:4.1.0'
+    compileOnly "com.android.tools.lint:lint-gradle:27.1.0"
+    compileOnly "com.android.tools.lint:lint-api:27.1.0"
 }

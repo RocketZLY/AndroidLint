@@ -17,7 +17,7 @@ import org.gradle.api.Task
  * Date: 2022/1/9
  * Time: 7:22 下午
  */
-class AgpApiV40 : IAgpApi() {
+class AgpApiV40 : IAgpApi {
 
     override fun createLintTasks(
         project: Project,
@@ -44,5 +44,14 @@ class AgpApiV40 : IAgpApi() {
         // Only create lint targets for variants like debug and release, not debugTest
         val variantType = variantScope.variantDslInfo.variantType
         return !variantType.isForTesting
+    }
+
+    override fun injectPatch(project: Project, version: String) {
+    }
+
+    override fun replaceLintClassLoader(task: Task) {
+    }
+
+    override fun resetLintClassLoader() {
     }
 }
