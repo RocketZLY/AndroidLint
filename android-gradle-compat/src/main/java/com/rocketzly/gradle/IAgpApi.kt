@@ -22,7 +22,7 @@ interface IAgpApi {
         secondaryAction: TaskConfigAction<Task>?,
     )
 
-    val  LINT_PATCH: String
+    val LINT_PATCH: String
         get() = "lintPatch"
 
     /**
@@ -38,7 +38,7 @@ interface IAgpApi {
 
     /**
      * 重置加载lint的classLoader
-     * 在increment和full执行后将classloader置为null，避免插入类对之后执行的其他lintTask造成的影响
+     * 在increment执行后将classloader置为null，避免补丁对之后执行的其他lintTask造成的影响
      */
     fun resetLintClassLoader()
 }

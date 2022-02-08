@@ -22,6 +22,11 @@ import java.net.URL
  */
 class AgpApiV41 : IAgpApi {
 
+    companion object {
+        private const val PATCH_GROUP_ID = "com.github.rocketzly"
+        private const val PATCH_ARTIFACT_ID = "android-gradle-v4_1"
+    }
+
     override fun createLintTasks(
         project: Project,
         taskName: String,
@@ -48,7 +53,7 @@ class AgpApiV41 : IAgpApi {
         config.isCanBeConsumed = false
         config.description = "The lint patch classpath"
         project.dependencies.add(
-            config.name, "com.github.rocketzly:android-gradle-v4_1:$version"
+            config.name, "$PATCH_GROUP_ID:$PATCH_ARTIFACT_ID:$version"
         )
     }
 
@@ -72,7 +77,7 @@ class AgpApiV41 : IAgpApi {
         //剔除无用依赖，只保留patch
         val patchUrls =
             patchFiles
-                .filter { it.name.contains("android-gradle-v4_1") }
+                .filter { it.name.contains(PATCH_ARTIFACT_ID) }
                 .map { it.toURL() }
 
         //合并url，把补丁插入urls第一个位置

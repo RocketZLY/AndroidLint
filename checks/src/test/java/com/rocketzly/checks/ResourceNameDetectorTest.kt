@@ -98,11 +98,11 @@ class ResourceNameDetectorTest {
     @Test
     fun matchingXmlResource() {
         val project = ProjectDescription(
-            xml("res/layout/activity_main.xml", layout),
-            xml("res/layout/dialog_main.xml", layout),
-            xml("res/layout/item_main.xml", layout),
-            xml("res/layout/view_main.xml", layout),
-            xml("res/layout/page_main.xml", layout),
+            xml("src/main/res/layout/activity_main.xml", layout),
+            xml("src/main/res/layout/dialog_main.xml", layout),
+            xml("src/main/res/layout/item_main.xml", layout),
+            xml("src/main/res/layout/view_main.xml", layout),
+            xml("src/main/res/layout/page_main.xml", layout),
             //需要增加gradle()，这样才能正确解析src/main目录结构
             gradle("apply plugin: 'com.android.application'\n")
         )
@@ -119,8 +119,8 @@ class ResourceNameDetectorTest {
     @Test
     fun mismatchingXmlResource() {
         val project = ProjectDescription(
-            xml("res/layout/search_main.xml", layout),
-            xml("res/layout/home_main.xml", layout),
+            xml("src/main/res/layout/search_main.xml", layout),
+            xml("src/main/res/layout/home_main.xml", layout),
             //需要增加gradle()，这样才能正确解析src/main目录结构
             gradle("apply plugin: 'com.android.application'\n")
         )
@@ -129,8 +129,8 @@ class ResourceNameDetectorTest {
             .issues(ResourceNameDetector.ISSUE)
             .run()
             .expect(
-                "res/layout/home_main.xml: Warning: layout命名不符合 (activity|dialog|item|view|page)_ 规则 [ResourceNameCheck]\n" +
-                        "res/layout/search_main.xml: Warning: layout命名不符合 (activity|dialog|item|view|page)_ 规则 [ResourceNameCheck]\n" +
+                "src/main/res/layout/home_main.xml: Warning: layout命名不符合 (activity|dialog|item|view|page)_ 规则 [ResourceNameCheck]\n" +
+                        "src/main/res/layout/search_main.xml: Warning: layout命名不符合 (activity|dialog|item|view|page)_ 规则 [ResourceNameCheck]\n" +
                         "0 errors, 2 warnings"
             )
     }
