@@ -231,8 +231,8 @@ class LintGradleClient(
             }
         }
 
-        //xxxxx
-        IncrementUtils.inject(gradleProject,lintRequest)
+        //注入增量文件
+        IncrementUtils.inject(gradleProject, project)
 
         lintRequest.setProjects(listOf(project))
         registerProject(project.dir, project)

@@ -1,7 +1,6 @@
 package com.android.tools.lint.gradle
 
-import com.android.tools.lint.client.api.LintRequest
-import org.gradle.api.Project
+import com.android.tools.lint.detector.api.Project
 import java.io.File
 
 /**
@@ -17,55 +16,38 @@ class IncrementUtils {
         const val TAG = "lint增量信息"
 
         @JvmStatic
-        fun inject(project: Project, lintRequest: LintRequest) {
-//            //当前执行的不是增量扫描
-//            if (project.gradle.startParameter.taskNames.find { it.contains("lintIncrement") } == null) {
-//                return
-//            }
+        fun inject(gradleProject: org.gradle.api.Project, project: Project) {
 
             //增量扫描逻辑
             printSplitLine(TAG)
-//            var revision = project.properties["revision"]
-//            var baseline = project.properties["baseline"]
-//            val command =
-//                "git diff $baseline $revision --name-only --diff-filter=ACMRTUXB"
-//            println("开始执行：")
-//            println(command)
-//
-//            val byteArray = Runtime.getRuntime()
-//                .exec(command)
-//                .inputStream
-//                .readBytes()
-//            val diffFileStr = String(byteArray, Charsets.UTF_8)
-//            val diffFileList = diffFileStr.split("\n")
-//            println()
-//            println("diff结果：")
-//            println(diffFileStr.removeSuffix("\n"))
-//
-//            val filterFileList = filterOtherModuleFile(diffFileList, project)
-//            println()
-//            println("当前Module为${project.name}，过滤掉其他Module文件真正进行lint扫描的文件如下：")
-//            filterFileList.forEach {
-//                println(it)
-//            }
-//
-//            lintRequest.getProjects()?.forEach { p ->
-//                filterFileList.forEach {
-//                    p.addFile(File(it))
-//                }
-//            }
-//            printSplitLine(TAG)
-        }
+            //默认的revision取自最新提交记录的hash
+            val defRevision = String(
+                Runtime.getRuntime()
+                    .exec("git log -1 --pretty=format:%h").inputStream.readBytes(),
+                Charsets.UTF_8
+            )
+            var revision = gradleProject.properties["revision"] ?: defRevision
+            var baseline = gradleProject.properties["baseline"]
+            val command =
+                "git diff $baseline $revision --name-only --diff-filter=ACMRTUXB"
+            println("开始执行：")
+            println(command)
 
-        /**
-         * 过滤其他module的文件，只扫当前module的
-         */
-        private fun filterOtherModuleFile(
-            originList: List<String>,
-            project: Project
-        ): List<String> {
-            val name = project.name
-            return originList.filter { it.startsWith(name) }
+            val byteArray = Runtime.getRuntime()
+                .exec(command)
+                .inputStream
+                .readBytes()
+            val diffFileStr = String(byteArray, Charsets.UTF_8).removeSuffix("\n")
+            val diffFileList = diffFileStr.split("\n")
+            println()
+            println("diff结果：")
+            println(diffFileStr)
+
+            diffFileList.forEach {
+                project.addFile(File(it))
+            }
+            printSplitLine(TAG)
+
         }
     }
 }
