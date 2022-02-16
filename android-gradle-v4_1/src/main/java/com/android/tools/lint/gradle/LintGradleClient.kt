@@ -40,7 +40,6 @@ import com.android.tools.lint.gradle.api.VariantInputs
 import com.android.tools.lint.model.LintModelSeverity
 import com.android.utils.XmlUtils
 import com.google.common.io.Files
-import org.gradle.StartParameter
 import org.gradle.api.GradleException
 import org.w3c.dom.Document
 import java.io.File
@@ -232,7 +231,7 @@ class LintGradleClient(
         }
 
         //注入增量文件
-        IncrementUtils.inject(gradleProject, project)
+        IncrementHelper.injectFile(gradleProject, project)
 
         lintRequest.setProjects(listOf(project))
         registerProject(project.dir, project)

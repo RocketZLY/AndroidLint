@@ -9,9 +9,6 @@ dependencies {
     compileOnly "com.android.tools.lint:lint-gradle:$lint_version"
     compileOnly "com.android.tools.lint:lint-api:$lint_version"
     //agpCompat
-    runtimeOnly project(":android-gradle-v3_6")
-    runtimeOnly project(":android-gradle-v4_0")
-    runtimeOnly project(":android-gradle-v4_1")
     implementation project(':android-gradle-compat')
 }
 

@@ -11,5 +11,8 @@ java {
 dependencies {
     compileOnly gradleApi()
     compileOnly "com.android.tools.build:gradle:$agp_version"
+    runtimeOnly project(":android-gradle-v3_6")
+    runtimeOnly project(":android-gradle-v4_0")
+    runtimeOnly project(":android-gradle-v4_1")
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 }

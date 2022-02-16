@@ -1,6 +1,6 @@
-package com.android.tools.lint.gradle
+package com.rocketzly.gradle.utils
 
-import com.android.tools.lint.detector.api.Project
+import org.gradle.api.Project
 import java.io.File
 
 /**
@@ -13,13 +13,9 @@ class IncrementUtils {
 
     companion object {
 
-        const val TAG = "lint增量信息"
-
         @JvmStatic
-        fun inject(gradleProject: org.gradle.api.Project, project: Project) {
+        fun getChangeFile(gradleProject: Project): List<File> {
 
-            //增量扫描逻辑
-            printSplitLine(TAG)
             //默认的revision取自最新提交记录的hash
             val defRevision = String(
                 Runtime.getRuntime()
@@ -42,18 +38,9 @@ class IncrementUtils {
             println()
             println("diff结果：")
             println(diffFileStr)
-
-            diffFileList.forEach {
-                project.addFile(File(it))
-            }
-            printSplitLine(TAG)
-
+            return diffFileList.map { File(it) }
         }
     }
-}
-
-fun printSplitLine(tag: String) {
-    println("--------------------------------------------日志分割线：$tag--------------------------------------------")
 }
 
 
