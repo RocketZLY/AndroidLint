@@ -6,14 +6,13 @@ import org.gradle.api.Project
 import java.io.File
 
 /**
- * 修改lintOption配置
+ * LintOptionsData数据转换器
  * Created by rocketzly on 2020/8/30.
  */
-class LintOptionsDataGenerator {
+class LintOptionsDataAdapter {
 
     companion object {
-        val CHECK_LIST = setOf(
-            "SerializableClassCheck",
+        private val CHECK_LIST = setOf(
             "HandleExceptionCheck",
             "AvoidUsageApiCheck",
             "DependencyApiCheck",
@@ -23,7 +22,7 @@ class LintOptionsDataGenerator {
         const val HTML_OUTPUT_RELATIVE_PATH = "build/reports/lint-results.html"
         const val BASELINE_RELATIVE_PATH = "lint-baseline.xml"
 
-        fun create(project: Project, configExtension: LintConfigExtension): LintOptionData {
+        fun adapter(project: Project, configExtension: LintConfigExtension): LintOptionData {
             return LintOptionData().apply {
                 if (configExtension.onlyCheckCustomIssue) {
                     check = CHECK_LIST //设置只检查自定义issue

@@ -41,14 +41,14 @@ class LintTaskHelper : LintHelper {
                     //更新lintOption配置
                     agpApi.updateLintOption(
                         task,
-                        LintOptionsDataGenerator.create(
+                        LintOptionsDataAdapter.adapter(
                             project,
                             ExtensionHelper.getLintConfigExtension(project)
                         )
                     )
                     task.doFirst {
                         //替换classLoader来实现增量扫描功能，非增量task不需要直接return
-                        if (task.name != TASK_NAME_LINT_INCREMENT) return@doFirst
+                        if (!task.name.startsWith(TASK_NAME_LINT_INCREMENT)) return@doFirst
                         //替换lintClassLoader
                         //模拟lintClassLoader创建过程，将补丁插入到urls第一个，达到替换LintGradleClient的作用
                         agpApi.replaceLintClassLoader(task)

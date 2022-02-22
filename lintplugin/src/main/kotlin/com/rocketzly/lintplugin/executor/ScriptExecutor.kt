@@ -1,7 +1,7 @@
 package com.rocketzly.lintplugin.executor
 
 import com.rocketzly.lintplugin.analyze.printSplitLine
-import com.rocketzly.lintplugin.task.LintOptionsDataGenerator.Companion.HTML_OUTPUT_RELATIVE_PATH
+import com.rocketzly.lintplugin.task.LintOptionsDataAdapter.Companion.HTML_OUTPUT_RELATIVE_PATH
 import org.gradle.api.Project
 import java.io.File
 
@@ -34,7 +34,7 @@ class ScriptExecutor {
 
             val file = File(scriptPath)
             if (!file.exists() || !file.isFile) {
-                println("未找到${scriptPath}文件，将不会自动执行脚本")
+                println("未找到${file.absolutePath}文件，将不会自动执行脚本")
                 printSplitLine(TAG)
                 return
             }
