@@ -14,9 +14,4 @@ open class LintConfigExtension {
      * 只扫自定义规则
      */
     var onlyCheckCustomIssue = true
-
-    /**
-     * 发现错误不停止task执行，功能暂未实现
-     */
-    var notStopWhenErrorFound = false
 }

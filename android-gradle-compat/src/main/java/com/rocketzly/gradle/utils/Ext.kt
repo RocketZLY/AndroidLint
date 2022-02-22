@@ -1,5 +1,6 @@
 package com.rocketzly.gradle.utils
 
+import com.rocketzly.gradle.AndroidGradleCompatException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -37,4 +38,17 @@ val Plugin<*>.variantManager: Any
             this,
             variantManagerStr
         ) ?: throw AndroidGradleCompatException("未找到variantManager")
+    }
+
+/**
+ * BaseExtension，Any类型使用的时候在转换成对应版本的BaseExtension
+ */
+val Plugin<*>.extension: Any
+    get() {
+        return ReflectionUtils.invokeMethod(
+            this,
+            "getExtension",
+            arrayOf(),
+            arrayOf()
+        ) ?: throw AndroidGradleCompatException("未找到extension")
     }

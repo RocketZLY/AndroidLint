@@ -12,6 +12,8 @@ import java.io.File
 class IncrementUtils {
 
     companion object {
+        const val PARAM_NAME_BASELINE = "baseline"
+        const val PARAM_NAME_REVISION = "revision"
 
         @JvmStatic
         fun getChangeFile(gradleProject: Project): List<File> {
@@ -22,8 +24,8 @@ class IncrementUtils {
                     .exec("git log -1 --pretty=format:%h").inputStream.readBytes(),
                 Charsets.UTF_8
             )
-            var revision = gradleProject.properties["revision"] ?: defRevision
-            var baseline = gradleProject.properties["baseline"]
+            var baseline = gradleProject.properties[PARAM_NAME_BASELINE]
+            var revision = gradleProject.properties[PARAM_NAME_REVISION] ?: defRevision
             val command =
                 "git diff $baseline $revision --name-only --diff-filter=ACMRTUXB"
             println("开始执行：")
@@ -34,11 +36,11 @@ class IncrementUtils {
                 .inputStream
                 .readBytes()
             val diffFileStr = String(byteArray, Charsets.UTF_8).removeSuffix("\n")
-            val diffFileList = diffFileStr.split("\n")
+            val diffFileStrList = diffFileStr.split("\n")
             println()
             println("diff结果：")
             println(diffFileStr)
-            return diffFileList.map { File(it) }
+            return diffFileStrList.map { File(it) }
         }
     }
 }

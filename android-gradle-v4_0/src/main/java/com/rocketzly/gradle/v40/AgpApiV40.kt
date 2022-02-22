@@ -7,6 +7,7 @@ import com.android.build.gradle.internal.tasks.factory.TaskConfigAction
 import com.android.build.gradle.internal.tasks.factory.TaskFactoryImpl
 import com.android.build.gradle.tasks.LintPerVariantTask
 import com.rocketzly.gradle.IAgpApi
+import com.rocketzly.gradle.bean.LintOptionData
 import com.rocketzly.gradle.utils.androidPlugin
 import com.rocketzly.gradle.utils.variantManager
 import org.gradle.api.Project
@@ -46,7 +47,11 @@ class AgpApiV40 : IAgpApi {
         return !variantType.isForTesting
     }
 
-    override fun injectPatch(project: Project, version: String) {
+    override fun addPatchDependence(project: Project, version: String) {
+    }
+
+    override fun updateLintOption(task: Task, lintOptionData: LintOptionData) {
+
     }
 
     override fun replaceLintClassLoader(task: Task) {

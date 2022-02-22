@@ -8,6 +8,7 @@ import com.android.build.gradle.tasks.LintPerVariantTask
 import com.android.tools.lint.gradle.api.DelegatingClassLoader
 import com.android.tools.lint.gradle.api.ReflectiveLintRunner
 import com.rocketzly.gradle.IAgpApi
+import com.rocketzly.gradle.bean.LintOptionData
 import com.rocketzly.gradle.utils.ReflectionUtils
 import com.rocketzly.gradle.utils.androidPlugin
 import com.rocketzly.gradle.utils.variantManager
@@ -46,7 +47,7 @@ class AgpApiV41 : IAgpApi {
         }
     }
 
-    override fun injectPatch(project: Project, version: String) {
+    override fun addPatchDependence(project: Project, version: String) {
         val config = project.configurations.create(LINT_PATCH)
         config.isVisible = false
         config.isTransitive = true
@@ -55,6 +56,16 @@ class AgpApiV41 : IAgpApi {
         project.dependencies.add(
             config.name, "$PATCH_GROUP_ID:$PATCH_ARTIFACT_ID:$version"
         )
+    }
+
+    override fun updateLintOption(task: Task, lintOptionData: LintOptionData) {
+        (task as LintPerVariantTask).lintOptions.apply {
+            checkOnly(*lintOptionData.check.toTypedArray())
+            xmlOutput = lintOptionData.xmlOutput
+            htmlOutput = lintOptionData.htmlOutput
+            isAbortOnError = lintOptionData.abortOnError
+            baselineFile = lintOptionData.baselineFile
+        }
     }
 
     override fun replaceLintClassLoader(task: Task) {

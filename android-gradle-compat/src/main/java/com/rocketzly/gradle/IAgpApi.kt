@@ -2,6 +2,7 @@ package com.rocketzly.gradle
 
 import com.android.build.gradle.internal.tasks.factory.PreConfigAction
 import com.android.build.gradle.internal.tasks.factory.TaskConfigAction
+import com.rocketzly.gradle.bean.LintOptionData
 import org.gradle.api.Project
 import org.gradle.api.Task
 
@@ -26,9 +27,14 @@ interface IAgpApi {
         get() = "lintPatch"
 
     /**
-     * 加入补丁以支持增量扫描功能
+     * 添加补丁依赖以支持增量扫描功能
      */
-    fun injectPatch(project: Project, version: String)
+    fun addPatchDependence(project: Project, version: String)
+
+    /**
+     * 更新lintOption属性
+     */
+    fun updateLintOption(task: Task, lintOptionData: LintOptionData)
 
     /**
      * 替换lintClassLoader

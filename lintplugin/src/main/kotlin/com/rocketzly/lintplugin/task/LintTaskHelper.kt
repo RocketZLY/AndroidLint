@@ -5,6 +5,7 @@ import com.rocketzly.gradle.AgpApiFactory
 import com.rocketzly.gradle.IAgpApi
 import com.rocketzly.lintplugin.LintHelper
 import com.rocketzly.lintplugin.dependency.DependencyHelper
+import com.rocketzly.lintplugin.extension.ExtensionHelper
 import org.gradle.api.Project
 import org.gradle.api.Task
 import java.util.*
@@ -16,23 +17,38 @@ import java.util.*
  */
 class LintTaskHelper : LintHelper {
 
+    companion object {
+        const val TASK_NAME_LINT_FULL = "lintFull"
+        const val TASK_NAME_LINT_INCREMENT = "lintIncrement"
+    }
+
     override fun apply(project: Project) {
         project.afterEvaluate {
             val agpApi = AgpApiFactory.getAgpApi()
-            //加入补丁以支持增量扫描功能
-            agpApi.injectPatch(project, DependencyHelper.version)
+            //添加补丁依赖以支持增量扫描功能
+            agpApi.addPatchDependence(project, DependencyHelper.version)
             //创建增量lint
-            createLintTasks(agpApi, project, LintCreationAction.TASK_NAME_LINT_INCREMENT)
+            createLintTasks(agpApi, project, TASK_NAME_LINT_INCREMENT)
             //全量lint
-            createLintTasks(agpApi, project, LintCreationAction.TASK_NAME_LINT_FULL)
+            createLintTasks(agpApi, project, TASK_NAME_LINT_FULL)
         }
     }
 
     private fun createLintTasks(agpApi: IAgpApi, project: Project, taskName: String) {
-        val secondaryAction = if (taskName == LintCreationAction.TASK_NAME_LINT_INCREMENT) {
+        val secondaryAction =
             object : TaskConfigAction<Task> {
                 override fun configure(task: Task) {
+                    //更新lintOption配置
+                    agpApi.updateLintOption(
+                        task,
+                        LintOptionsDataGenerator.create(
+                            project,
+                            ExtensionHelper.getLintConfigExtension(project)
+                        )
+                    )
                     task.doFirst {
+                        //替换classLoader来实现增量扫描功能，非增量task不需要直接return
+                        if (task.name != TASK_NAME_LINT_INCREMENT) return@doFirst
                         //替换lintClassLoader
                         //模拟lintClassLoader创建过程，将补丁插入到urls第一个，达到替换LintGradleClient的作用
                         agpApi.replaceLintClassLoader(task)
@@ -47,9 +63,6 @@ class LintTaskHelper : LintHelper {
                     }
                 }
             }
-        } else {
-            null
-        }
         agpApi.createLintTasks(
             project,
             taskName,
