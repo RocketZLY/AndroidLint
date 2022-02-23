@@ -1,6 +1,6 @@
-package com.rocketzly.gradle.utils
+package com.rocketzly.gradle.api.utils
 
-import com.rocketzly.gradle.AndroidGradleCompatException
+import com.rocketzly.gradle.api.AndroidGradleCompatException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 

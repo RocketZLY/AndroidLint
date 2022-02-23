@@ -2,8 +2,8 @@ package com.rocketzly.gradle.v41
 
 import com.android.repository.Revision
 import com.google.auto.service.AutoService
-import com.rocketzly.gradle.IAgpApi
 import com.rocketzly.gradle.IAgpApiProvider
+import com.rocketzly.gradle.api.IAgpApi
 
 /**
  * User: Rocket

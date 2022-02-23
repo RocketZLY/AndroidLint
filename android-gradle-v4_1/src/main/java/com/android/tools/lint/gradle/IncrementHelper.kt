@@ -1,7 +1,7 @@
 package com.android.tools.lint.gradle
 
 import com.android.tools.lint.detector.api.Project
-import com.rocketzly.gradle.utils.IncrementUtils
+import com.rocketzly.gradle.api.utils.IncrementUtils
 
 /**
  * 增量扫描工具

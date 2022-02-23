@@ -1,4 +1,4 @@
-package com.rocketzly.gradle.utils
+package com.rocketzly.gradle.api.utils
 
 import java.lang.reflect.Field
 import java.lang.reflect.Method

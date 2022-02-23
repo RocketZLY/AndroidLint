@@ -2,6 +2,7 @@ package com.rocketzly.gradle
 
 import com.android.Version
 import com.android.repository.Revision
+import com.rocketzly.gradle.api.IAgpApi
 import java.util.*
 
 /**

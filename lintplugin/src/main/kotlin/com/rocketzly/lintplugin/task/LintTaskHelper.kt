@@ -2,7 +2,7 @@ package com.rocketzly.lintplugin.task
 
 import com.android.build.gradle.internal.tasks.factory.TaskConfigAction
 import com.rocketzly.gradle.AgpApiFactory
-import com.rocketzly.gradle.IAgpApi
+import com.rocketzly.gradle.api.IAgpApi
 import com.rocketzly.lintplugin.LintHelper
 import com.rocketzly.lintplugin.dependency.DependencyHelper
 import com.rocketzly.lintplugin.extension.ExtensionHelper

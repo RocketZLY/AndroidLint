@@ -1,7 +1,7 @@
 package com.rocketzly.lintplugin.analyze
 
 import com.android.build.gradle.BaseExtension
-import com.rocketzly.gradle.utils.IncrementUtils.Companion.PARAM_NAME_BASELINE
+import com.rocketzly.gradle.api.utils.IncrementUtils.Companion.PARAM_NAME_BASELINE
 import com.rocketzly.lintplugin.LintException
 import com.rocketzly.lintplugin.LintHelper
 import com.rocketzly.lintplugin.executor.ScriptExecutor

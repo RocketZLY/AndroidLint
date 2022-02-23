@@ -1,4 +1,4 @@
-package com.rocketzly.gradle
+package com.rocketzly.gradle.api
 
 /**
  * User: Rocket

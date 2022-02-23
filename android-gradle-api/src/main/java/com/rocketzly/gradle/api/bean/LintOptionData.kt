@@ -1,4 +1,4 @@
-package com.rocketzly.gradle.bean
+package com.rocketzly.gradle.api.bean
 
 import java.io.File
 

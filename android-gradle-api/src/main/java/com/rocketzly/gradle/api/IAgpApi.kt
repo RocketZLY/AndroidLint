@@ -1,8 +1,8 @@
-package com.rocketzly.gradle
+package com.rocketzly.gradle.api
 
 import com.android.build.gradle.internal.tasks.factory.PreConfigAction
 import com.android.build.gradle.internal.tasks.factory.TaskConfigAction
-import com.rocketzly.gradle.bean.LintOptionData
+import com.rocketzly.gradle.api.bean.LintOptionData
 import org.gradle.api.Project
 import org.gradle.api.Task
 

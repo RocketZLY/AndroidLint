@@ -1,6 +1,7 @@
 package com.rocketzly.gradle
 
 import com.android.repository.Revision
+import com.rocketzly.gradle.api.IAgpApi
 
 /**
  * LintPlugin使用到agpApi的抽象，不同版本不同实现

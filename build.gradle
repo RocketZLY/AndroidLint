@@ -32,6 +32,7 @@ subprojects { p ->
     //需要上传项目列表
     def uploadProjectList = ['lintplugin',
                              'lintlibrary',
+                             'android-gradle-api',
                              'android-gradle-compat',
                              'android-gradle-v3_6',
                              'android-gradle-v4_0',

@@ -1,6 +1,6 @@
 package com.rocketzly.lintplugin.task
 
-import com.rocketzly.gradle.bean.LintOptionData
+import com.rocketzly.gradle.api.bean.LintOptionData
 import com.rocketzly.lintplugin.extension.LintConfigExtension
 import org.gradle.api.Project
 import java.io.File

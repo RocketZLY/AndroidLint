@@ -14,5 +14,6 @@ dependencies {
     runtimeOnly project(":android-gradle-v3_6")
     runtimeOnly project(":android-gradle-v4_0")
     runtimeOnly project(":android-gradle-v4_1")
+    api project(":android-gradle-api")
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 }
