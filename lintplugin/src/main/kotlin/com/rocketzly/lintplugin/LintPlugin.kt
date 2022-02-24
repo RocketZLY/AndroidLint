@@ -19,6 +19,6 @@ class LintPlugin : Plugin<Project> {
         ExtensionHelper().apply(project)
         //分析器，用来分析入参和结果
         AnalyzeHelper().apply(project)
-        LintTaskHelper().apply(project)
+//        LintTaskHelper().apply(project)
     }
 }

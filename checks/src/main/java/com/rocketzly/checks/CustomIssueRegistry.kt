@@ -1,6 +1,7 @@
 package com.rocketzly.checks
 
 import com.android.tools.lint.client.api.IssueRegistry
+import com.android.tools.lint.client.api.Vendor
 import com.android.tools.lint.detector.api.CURRENT_API
 import com.android.tools.lint.detector.api.Issue
 import com.rocketzly.checks.detector.AvoidUsageApiDetector
@@ -25,4 +26,12 @@ class CustomIssueRegistry : IssueRegistry() {
 
     override val api: Int
         get() = CURRENT_API
+
+    override val vendor: Vendor
+        get() = Vendor(
+            "RocketZLY",
+            "customLint",
+            "https://github.com/RocketZLY/AndroidLint",
+            "https://github.com/RocketZLY/AndroidLint"
+        )
 }

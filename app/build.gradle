@@ -3,8 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'com.github.rocketzly.lintplugin'
 
 android {
-    compileSdkVersion 29
-    buildToolsVersion "29.0.3"
+    compileSdk 29
 
     defaultConfig {
         applicationId "com.rocketzly.androidlint"

@@ -11,6 +11,8 @@ java {
 dependencies {
     compileOnly gradleApi()
     compileOnly "com.android.tools.build:gradle:$agp_version"
+    compileOnly "com.android.tools:repository:$lint_version"
+    compileOnly "com.android.tools:common:$lint_version"
     runtimeOnly project(":android-gradle-v3_6")
     runtimeOnly project(":android-gradle-v4_0")
     runtimeOnly project(":android-gradle-v4_1")
