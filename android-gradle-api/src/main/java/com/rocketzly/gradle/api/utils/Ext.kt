@@ -41,6 +41,18 @@ val Plugin<*>.variantManager: Any
     }
 
 /**
+ * GlobalScope，Any类型使用的时候在转换成对应版本的GlobalScope
+ */
+val Plugin<*>.globalScope: Any
+    get() {
+        val globalScopeStr = "globalScope"
+        return ReflectionUtils.getFieldValue(
+            this,
+            globalScopeStr
+        ) ?: throw AndroidGradleCompatException("未找到globalScope")
+    }
+
+/**
  * BaseExtension，Any类型使用的时候在转换成对应版本的BaseExtension
  */
 val Plugin<*>.extension: Any

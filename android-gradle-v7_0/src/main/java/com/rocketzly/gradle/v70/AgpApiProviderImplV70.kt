@@ -10,11 +10,11 @@ import com.rocketzly.gradle.api.IAgpApi
  * Date: 2021/11/14
  * Time: 4:22 下午
  */
-//@AutoService(IAgpApiProvider::class)
-//class AgpApiProviderImplV70 : IAgpApiProvider {
-//    override val compatRevision: Revision = Revision(7, 0, 0)
-//
-//    override val agpApi: IAgpApi by lazy {
-//        AgpApiV70()
-//    }
-//}
+@AutoService(IAgpApiProvider::class)
+class AgpApiProviderImplV70 : IAgpApiProvider {
+    override val compatRevision: Revision = Revision(7, 0, 0)
+
+    override val agpApi: IAgpApi by lazy {
+        AgpApiV70()
+    }
+}
